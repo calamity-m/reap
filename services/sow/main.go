@@ -1,14 +1,17 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/calamity-m/reap/shared/go/auth"
+	"log"
+	"log/slog"
 )
 
 func main() {
-	fmt.Println("wtf")
 
-	auth.Auth()
+	sow := NewSowServer(*slog.Default(), "localhost:8099")
 
+	err := sow.ListenAndServe()
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }
