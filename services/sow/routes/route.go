@@ -5,7 +5,15 @@ import (
 	"net/http"
 )
 
-func Echo(w http.ResponseWriter, r *http.Request) {
+func NewSowRouter() http.Handler {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("GET /echo/", echo)
+
+	return mux
+}
+
+func echo(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "Hello %v\n", r)
 }

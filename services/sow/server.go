@@ -16,19 +16,11 @@ func (s *SowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createRouter() http.Handler {
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /echo/", routes.Echo)
-
-	return mux
-}
-
 func NewSowServer(log slog.Logger, address string) *SowServer {
 	srv := &SowServer{
 		srv: http.Server{
 			Addr:    address,
-			Handler: createRouter(),
+			Handler: routes.NewSowRouter(),
 		},
 		log: log,
 	}
