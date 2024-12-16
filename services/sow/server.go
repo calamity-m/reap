@@ -20,7 +20,7 @@ func NewSowServer(log slog.Logger, address string) *SowServer {
 	srv := &SowServer{
 		srv: http.Server{
 			Addr:    address,
-			Handler: routes.NewSowRouter(),
+			Handler: routes.NewSowRouter(log),
 		},
 		log:           log,
 		shutdownGrace: 1,
