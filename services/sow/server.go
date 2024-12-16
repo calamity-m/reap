@@ -39,10 +39,10 @@ func (s *SowServer) Shutdown() error {
 	defer cancel()
 
 	if err := s.srv.Shutdown(ctx); err != nil {
-		fmt.Println("waaahh?")
+		s.log.Error(fmt.Sprintf("Failed to shutdown due to: %v", err))
 		return fmt.Errorf("failed to shutdown gracefully: %v", err)
 	}
 
-	fmt.Println("happy ended good yes yes")
+	s.log.Info("successfully completed shutdown")
 	return nil
 }

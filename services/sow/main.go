@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -25,7 +24,6 @@ func run(srv *SowServer) error {
 		// Block until we receive a Interrupt or Kill
 		<-sig
 
-		fmt.Println("Exiting server")
 		if err := srv.Shutdown(); err != nil {
 			// Pass error through for return
 			exit <- err
@@ -38,18 +36,18 @@ func run(srv *SowServer) error {
 		return fmt.Errorf("failed to start/close sow server due to: %v", err)
 	}
 
-	fmt.Println("Exiting server!!!")
 	return <-exit
 }
 
 func main() {
 
-	sow := NewSowServer(*slog.Default(), "localhost:8099")
+	sow := NewSowServer(*slog.New(slog.NewJSONHandler(os.Stderr, nil)), "localhost:8099")
+	sow.log.Info("Initialized server, moving to initiating http listen")
 
-	err := run(sow)
-
-	if err != nil {
-		log.Fatalf("Encountered error running sow server: %v", err)
+	if err := run(sow); err != nil {
+		sow.log.Error(fmt.Sprintf("Encountered error running sow server: %v", err))
 		os.Exit(1)
 	}
+
+	sow.log.Error("Exiting sow server")
 }

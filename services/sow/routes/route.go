@@ -8,12 +8,14 @@ import (
 func NewSowRouter() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /echo/", echo)
+	mux.HandleFunc("GET /echo/", handleEcho("ay"))
 
 	return mux
 }
 
-func echo(w http.ResponseWriter, r *http.Request) {
+func handleEcho(greet string) func(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Fprintf(w, "Hello %v\n", r)
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "Echo echo %s ecchooo... request: %v", greet, r)
+	}
 }
