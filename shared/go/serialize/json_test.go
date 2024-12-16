@@ -2,6 +2,7 @@ package serialize
 
 import (
 	"bytes"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -17,6 +18,14 @@ type data struct {
 	Name      string   `json:"name"`
 	Abilities []string `json:"abilities"`
 	Combos    friend   `json:"combos"`
+}
+
+func (d data) Validate() (errs map[string]error) {
+	if d.Name == "jeff" {
+		return nil
+	}
+
+	return map[string]error{"jeff": errors.New("i only want jeff")}
 }
 
 func TestEncode(t *testing.T) {
@@ -132,4 +141,41 @@ func TestSymmetry(t *testing.T) {
 		})
 
 	}
+}
+
+func TestDecodeValid(t *testing.T) {
+	t.Run("decoder passes validation", func(t *testing.T) {
+		want := &data{
+			Name:      "jeff",
+			Abilities: []string{"wallride", "spit", "cute"},
+			Combos:    friend{"groot"},
+		}
+
+		blob := `{"name":"jeff","abilities":["wallride","spit","cute"],"combos":{"friend":"groot"}}`
+
+		request := httptest.NewRequest(http.MethodGet, "/", bytes.NewReader([]byte(blob)))
+
+		got, errs := DecodeJSONValid[data](request)
+
+		if len(errs) > 0 {
+			t.Errorf("got unwanted errs %v", errs)
+		}
+
+		if !reflect.DeepEqual(&got, want) {
+			t.Errorf("got %q but want %q", got, want)
+		}
+
+	})
+
+	t.Run("decoder fails validation", func(t *testing.T) {
+		blob := `{"name":"jeffzzzzz","abilities":["wallride","spit","cute"],"combos":{"friend":"groot"}}`
+
+		request := httptest.NewRequest(http.MethodGet, "/", bytes.NewReader([]byte(blob)))
+
+		_, errs := DecodeJSONValid[data](request)
+
+		if len(errs) == 0 {
+			t.Errorf("wanted errors but got none")
+		}
+	})
 }
