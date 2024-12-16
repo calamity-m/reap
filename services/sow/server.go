@@ -1,19 +1,19 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/calamity-m/reap/services/sow/routes"
 )
 
 type SowServer struct {
-	srv http.Server
-	log slog.Logger
-}
-
-func (s *SowServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-
+	srv           http.Server
+	log           slog.Logger
+	shutdownGrace time.Duration
 }
 
 func NewSowServer(log slog.Logger, address string) *SowServer {
@@ -22,7 +22,8 @@ func NewSowServer(log slog.Logger, address string) *SowServer {
 			Addr:    address,
 			Handler: routes.NewSowRouter(),
 		},
-		log: log,
+		log:           log,
+		shutdownGrace: 1,
 	}
 
 	return srv
@@ -30,4 +31,18 @@ func NewSowServer(log slog.Logger, address string) *SowServer {
 
 func (s *SowServer) ListenAndServe() error {
 	return s.srv.ListenAndServe()
+}
+
+func (s *SowServer) Shutdown() error {
+
+	ctx, cancel := context.WithTimeout(context.Background(), s.shutdownGrace*time.Second)
+	defer cancel()
+
+	if err := s.srv.Shutdown(ctx); err != nil {
+		fmt.Println("waaahh?")
+		return fmt.Errorf("failed to shutdown gracefully: %v", err)
+	}
+
+	fmt.Println("happy ended good yes yes")
+	return nil
 }
