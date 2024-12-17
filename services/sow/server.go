@@ -12,11 +12,12 @@ import (
 
 type SowServer struct {
 	srv           http.Server
-	log           slog.Logger
+	log           *slog.Logger
 	shutdownGrace time.Duration
 }
 
-func NewSowServer(log slog.Logger, address string) *SowServer {
+func NewSowServer(log *slog.Logger, address string) *SowServer {
+
 	srv := &SowServer{
 		srv: http.Server{
 			Addr:    address,

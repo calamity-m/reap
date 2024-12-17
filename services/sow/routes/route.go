@@ -5,18 +5,26 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/calamity-m/reap/shared/go/middleware"
 	"github.com/calamity-m/reap/shared/go/serialize"
 )
 
-func NewSowRouter(log slog.Logger) http.Handler {
+func NewSowRouter(log *slog.Logger) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /echo/", handleEcho(log, "ay"))
+	mux.HandleFunc("GET /fail/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "fail", http.StatusBadRequest)
+	})
 
-	return mux
+	wrapper := middleware.Wrap(
+		middleware.RequestIDMiddleware(log, true),
+	)
+
+	return wrapper(mux)
 }
 
-func handleEcho(log slog.Logger, greet string) func(w http.ResponseWriter, r *http.Request) {
+func handleEcho(log *slog.Logger, greet string) func(w http.ResponseWriter, r *http.Request) {
 
 	type echo struct {
 		Greeting string
@@ -38,7 +46,7 @@ func handleEcho(log slog.Logger, greet string) func(w http.ResponseWriter, r *ht
 		if err != nil {
 			w.WriteHeader(500)
 			fmt.Fprint(w, `{"error": "failed to encode response due to internal server error"}\n`)
-			log.Error("Failed to encode response due to: %v", err)
+			log.Error(fmt.Sprintf("Failed to encode response due to: %v", err.Error()))
 		}
 	}
 }

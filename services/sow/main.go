@@ -41,7 +41,7 @@ func run(srv *SowServer) error {
 
 func main() {
 
-	sow := NewSowServer(*slog.New(slog.NewJSONHandler(os.Stderr, nil)), "localhost:8099")
+	sow := NewSowServer(slog.New(slog.NewJSONHandler(os.Stderr, nil)), "localhost:8099")
 	sow.log.Info("Initialized server, moving to initiating http listen")
 
 	if err := run(sow); err != nil {
@@ -49,5 +49,5 @@ func main() {
 		os.Exit(1)
 	}
 
-	sow.log.Error("Exiting sow server")
+	sow.log.Info("Exiting sow server")
 }
