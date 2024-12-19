@@ -4,7 +4,9 @@ import (
 	"net/http"
 )
 
-// Wraps a HTTP handler in the provided middlewares
+// Wraps a HTTP handler in the provided middlewares like a stack, with the last middleware
+// added being the closest to the base handler, and the first added being the first/last
+// handler wrapping called.
 //
 //	Usage:
 //	handler = Wrap(RequestIDMiddleware(), LoggingMiddleware())(handler)
