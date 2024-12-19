@@ -18,6 +18,7 @@ func NewSowRouter(log *slog.Logger) http.Handler {
 	})
 
 	wrapper := middleware.Wrap(
+		middleware.LoggingMiddleware(log),
 		middleware.RequestIDMiddleware(log, true),
 	)
 
