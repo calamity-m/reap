@@ -6,18 +6,29 @@ import (
 	"time"
 )
 
-// CtxAttrs should be a map values wanted
-// from a context
-type CtxAttrs map[string]struct{}
+type loggingWriter struct {
+	http.ResponseWriter
+	statusCode int
+}
 
-// Logs request start/end with optional timing and attributes extracted from the request context
-func LoggingMiddleware(logger *slog.Logger, ctxAttrs CtxAttrs) func(http.Handler) http.Handler {
+// Supplant the inner http.ResponseWriter so we can spy on
+// the status code being sent out with the response.
+func (l *loggingWriter) WriteHeader(statusCode int) {
+	l.ResponseWriter.WriteHeader(statusCode)
+	l.statusCode = statusCode
+}
+
+// Logs the end of request action with tracing information, including
+// the duration the request took.
+func LoggingMiddleware(logger *slog.Logger) func(http.Handler) http.Handler {
 
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 
-			h.ServeHTTP(w, r)
+			wrappedWriter := loggingWriter{ResponseWriter: w}
+
+			h.ServeHTTP(&wrappedWriter, r)
 
 			end := time.Since(start)
 
@@ -25,10 +36,10 @@ func LoggingMiddleware(logger *slog.Logger, ctxAttrs CtxAttrs) func(http.Handler
 				r.Context(),
 				slog.LevelInfo.Level(),
 				"processed request",
+				slog.Int("status", wrappedWriter.statusCode),
 				slog.String("method", r.Method),
 				slog.String("host", r.Host),
 				slog.String("url", r.URL.Path),
-				slog.String("query", r.URL.RawQuery),
 				slog.String("agent", r.UserAgent()),
 				slog.String("duration", end.String()),
 			)

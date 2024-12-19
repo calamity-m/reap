@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"bytes"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,14 +11,17 @@ import (
 func TestRequestIDMiddleware(t *testing.T) {
 
 	t.Run("extract and maintain existing request id", func(t *testing.T) {
-		// Setup test dummies
 		want := "faked-request-id"
+
+		// Setup test dummies
+		buf := bytes.Buffer{}
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
 		request.Header.Add(RequestIDHeader, want)
 
 		// Create it
-		middleware := RequestIDMiddleware(makeLogger(), true)
+		middleware := RequestIDMiddleware(logger, true)
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -34,11 +39,13 @@ func TestRequestIDMiddleware(t *testing.T) {
 
 	t.Run("generate new request id", func(t *testing.T) {
 		// Setup test dummies
+		buf := bytes.Buffer{}
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
 
 		// Create it
-		middleware := RequestIDMiddleware(makeLogger(), true)
+		middleware := RequestIDMiddleware(logger, true)
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -55,14 +62,17 @@ func TestRequestIDMiddleware(t *testing.T) {
 	})
 
 	t.Run("omit header", func(t *testing.T) {
-		// Setup test dummies
 		want := "faked-request-id"
+
+		// Setup test dummies
+		buf := bytes.Buffer{}
+		logger := slog.New(slog.NewJSONHandler(&buf, nil))
 		response := httptest.NewRecorder()
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
 		request.Header.Add(RequestIDHeader, want)
 
 		// Create it
-		middleware := RequestIDMiddleware(makeLogger(), false)
+		middleware := RequestIDMiddleware(logger, false)
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
