@@ -8,9 +8,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/calamity-m/reap/services/sow/internal/server"
 )
 
-func run(srv *SowServer) error {
+func run(srv *server.SowServer) error {
 	exit := make(chan error)
 
 	go func() {
@@ -41,13 +43,15 @@ func run(srv *SowServer) error {
 
 func main() {
 
-	sow := NewSowServer(slog.New(slog.NewJSONHandler(os.Stderr, nil)), "localhost:8099")
-	sow.log.Info("Initialized server, moving to initiating http listen")
+	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+
+	sow := server.NewSowServer(logger, "localhost:8099")
+	logger.Info("Initialized server, moving to initiating http listen")
 
 	if err := run(sow); err != nil {
-		sow.log.Error(fmt.Sprintf("Encountered error running sow server: %v", err))
+		logger.Error(fmt.Sprintf("Encountered error running sow server: %v", err))
 		os.Exit(1)
 	}
 
-	sow.log.Info("Exiting sow server")
+	logger.Info("Exiting sow server")
 }
