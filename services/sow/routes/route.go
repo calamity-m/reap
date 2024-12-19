@@ -5,8 +5,8 @@ import (
 	"log/slog"
 	"net/http"
 
-	"github.com/calamity-m/reap/shared/go/middleware"
-	"github.com/calamity-m/reap/shared/go/serialize"
+	"github.com/calamity-m/reap/pkg/middleware"
+	"github.com/calamity-m/reap/pkg/serialize"
 )
 
 func NewSowRouter(log *slog.Logger) http.Handler {
