@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/calamity-m/reap/services/sow/routes"
+	"github.com/calamity-m/reap/services/sow/internal/routes"
 )
 
 type SowServer struct {
