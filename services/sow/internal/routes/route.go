@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/calamity-m/reap/pkg/middleware"
-	"github.com/calamity-m/reap/pkg/serialize"
+	"github.com/calamity-m/reap/pkg/rest"
 )
 
 func NewSowRouter(log *slog.Logger) http.Handler {
@@ -42,7 +42,7 @@ func handleEcho(log *slog.Logger, greet string) func(w http.ResponseWriter, r *h
 			Echo:     "Echhoooo",
 		}
 
-		err := serialize.EncodeJSON(w, r, 200, out)
+		err := rest.EncodeJSON(w, r, 200, out)
 
 		if err != nil {
 			w.WriteHeader(500)

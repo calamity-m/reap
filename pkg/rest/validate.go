@@ -1,4 +1,4 @@
-package serialize
+package rest
 
 // Validator is an object that can be validated by some abritrary rule/s
 type Validator interface {
