@@ -6,11 +6,9 @@ import (
 	"log/slog"
 	"net/http"
 
+	"github.com/calamity-m/reap/pkg/contexts"
 	"github.com/google/uuid"
 )
-
-// Key for accessing request id from a request's context
-type RequestIDKey struct{}
 
 // Header that will be queried and written to
 var (
@@ -54,7 +52,7 @@ func RequestIDMiddleware(logger *slog.Logger, writeHeader bool) func(http.Handle
 			}
 
 			// Act like a wrapper, providing the request id to the context along the way
-			h.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), RequestIDKey{}, id)))
+			h.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), contexts.RequestIDKey{}, id)))
 		})
 	}
 }

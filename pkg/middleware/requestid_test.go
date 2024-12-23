@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/calamity-m/reap/pkg/contexts"
 )
 
 func TestRequestIDMiddleware(t *testing.T) {
@@ -25,7 +27,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			got := r.Context().Value(RequestIDKey{})
+			got := r.Context().Value(contexts.RequestIDKey{})
 
 			if got != want {
 				t.Errorf("got %q but want %q for request id ctx value", got, want)
@@ -49,7 +51,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			got := r.Context().Value(RequestIDKey{})
+			got := r.Context().Value(contexts.RequestIDKey{})
 
 			if got == "" {
 				t.Error("got nothing, but want some generated id")
@@ -76,7 +78,7 @@ func TestRequestIDMiddleware(t *testing.T) {
 
 		// Run our middleware and verify
 		middleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			got := r.Context().Value(RequestIDKey{})
+			got := r.Context().Value(contexts.RequestIDKey{})
 
 			if got != want {
 				t.Errorf("got %q but want %q for request id ctx value", got, want)
