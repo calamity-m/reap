@@ -38,9 +38,8 @@ func TestEncode(t *testing.T) {
 
 		want := `{"name":"jeff","abilities":["wallride","spit","cute"],"combos":{"friend":"groot"}}`
 		response := httptest.NewRecorder()
-		request := httptest.NewRequest(http.MethodGet, "/", nil)
 
-		err := EncodeJSON(response, request, 200, jeff)
+		err := EncodeJSON(response, 200, jeff)
 
 		if err != nil {
 			t.Errorf("got unwanted err %v", err)
@@ -119,16 +118,15 @@ func TestSymmetry(t *testing.T) {
 
 			// First encode our reference into json
 			response := httptest.NewRecorder()
-			request := httptest.NewRequest(http.MethodGet, "/", nil)
 
-			err := EncodeJSON(response, request, 200, test.Reference)
+			err := EncodeJSON(response, 200, test.Reference)
 
 			if err != nil {
 				t.Errorf("unwanted error on encoding %v", err)
 			}
 
 			// Now decode our json back into the reference
-			request = httptest.NewRequest(http.MethodGet, "/", strings.NewReader(response.Body.String()))
+			request := httptest.NewRequest(http.MethodGet, "/", strings.NewReader(response.Body.String()))
 			got, err := DecodeJSON[data](request)
 
 			if err != nil {

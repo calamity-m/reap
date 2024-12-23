@@ -42,7 +42,7 @@ func handleEcho(log *slog.Logger, greet string) func(w http.ResponseWriter, r *h
 			Echo:     "Echhoooo",
 		}
 
-		err := rest.EncodeJSON(w, r, 200, out)
+		err := rest.EncodeJSON(w, 200, out)
 
 		if err != nil {
 			w.WriteHeader(500)

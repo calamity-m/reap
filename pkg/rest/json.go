@@ -10,11 +10,11 @@ type JSONMessage struct {
 	Message string `json:"message"`
 }
 
-func EncodeMessage(w http.ResponseWriter, r *http.Request, status int, msg string) error {
-	return EncodeJSON(w, r, status, JSONMessage{Message: msg})
+func EncodeMessage(w http.ResponseWriter, status int, msg string) error {
+	return EncodeJSON(w, status, JSONMessage{Message: msg})
 }
 
-func EncodeJSON[T any](w http.ResponseWriter, r *http.Request, status int, val T) error {
+func EncodeJSON[T any](w http.ResponseWriter, status int, val T) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
