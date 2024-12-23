@@ -15,9 +15,10 @@
 *.out
 
 # Go binaries
-services/sow/sow
-services/reap/reap
-services/till/till
+sow
+reap
+till
+harvest
 
 # Go workspace file
 go.work
