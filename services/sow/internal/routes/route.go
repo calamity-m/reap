@@ -18,8 +18,8 @@ func NewSowRouter(log *slog.Logger) http.Handler {
 	})
 
 	wrapper := middleware.Wrap(
-		middleware.LoggingMiddleware(log),
 		middleware.RequestIDMiddleware(log, true),
+		middleware.LoggingMiddleware(log),
 	)
 
 	return wrapper(mux)
@@ -35,7 +35,7 @@ func handleEcho(log *slog.Logger, greet string) func(w http.ResponseWriter, r *h
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		log.Info("Echo test log, echo handler entered")
+		log.InfoContext(r.Context(), "echo test log")
 		out := &echo{
 			Greeting: greet,
 			Request:  fmt.Sprintf("%v", r),

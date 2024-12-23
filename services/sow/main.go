@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/calamity-m/reap/pkg/logging"
 	"github.com/calamity-m/reap/services/sow/internal/server"
 )
 
@@ -43,7 +44,10 @@ func run(srv *server.SowServer) error {
 
 func main() {
 
-	logger := slog.New(slog.NewJSONHandler(os.Stderr, nil))
+	logger := slog.New(logging.NewCustomizedHandler(os.Stderr, &logging.CustomHandlerCfg{
+		Structed:        true,
+		RecordRequestId: true,
+	}))
 
 	sow := server.NewSowServer(logger, "localhost:8099")
 	logger.Info("Initialized server, moving to initiating http listen")
