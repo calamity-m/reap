@@ -97,7 +97,7 @@ func TestCustomizedHandler(t *testing.T) {
 
 func TestCustomziedHandlerRequestId(t *testing.T) {
 
-	t.Run("handler ignores request id if request", func(t *testing.T) {
+	t.Run("handler successfully logs request id", func(t *testing.T) {
 		want := map[string]any{
 			"msg":        "echo",
 			"level":      "INFO",
@@ -116,11 +116,10 @@ func TestCustomziedHandlerRequestId(t *testing.T) {
 		assertStructuredLog(t, &buffer, want)
 	})
 
-	t.Run("handler successfully logs request id", func(t *testing.T) {
+	t.Run("handler successfully ignores missing request id", func(t *testing.T) {
 		want := map[string]any{
-			"msg":        "echo",
-			"level":      "INFO",
-			"request-id": "unknown",
+			"msg":   "echo",
+			"level": "INFO",
 		}
 		buffer := bytes.Buffer{}
 
@@ -135,7 +134,7 @@ func TestCustomziedHandlerRequestId(t *testing.T) {
 		assertStructuredLog(t, &buffer, want)
 	})
 
-	t.Run("handler successfully logs missing request id", func(t *testing.T) {
+	t.Run("handler successfully ignores request id", func(t *testing.T) {
 		want := map[string]any{
 			"msg":   "echo",
 			"level": "INFO",

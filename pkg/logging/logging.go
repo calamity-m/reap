@@ -10,8 +10,7 @@ import (
 
 type CustomHandler struct {
 	slog.Handler
-	recordRequestId  bool
-	staticAttributes []slog.Attr
+	recordRequestId bool
 }
 
 type CustomHandlerCfg struct {
@@ -36,16 +35,10 @@ type CustomHandlerCfg struct {
 }
 
 func (c *CustomHandler) Handle(ctx context.Context, r slog.Record) error {
-
-	r.AddAttrs(c.staticAttributes...)
-
-	// Append request id when found, otherwise fulfil it as "unknown"
 	if c.recordRequestId {
 		reqId, ok := ctx.Value(contexts.RequestIDKey{}).(string)
 
-		if !ok {
-			r.AddAttrs(slog.String("request-id", "unknown"))
-		} else {
+		if ok {
 			r.AddAttrs(slog.String("request-id", string(reqId)))
 		}
 	}
@@ -62,7 +55,6 @@ func NewCustomizedHandler(w io.Writer, cfg *CustomHandlerCfg) *CustomHandler {
 		cfg = &CustomHandlerCfg{}
 	}
 
-	handler.staticAttributes = cfg.StaticAttributes
 	handler.recordRequestId = cfg.RecordRequestId
 
 	handlerOpts := &slog.HandlerOptions{
@@ -75,6 +67,8 @@ func NewCustomizedHandler(w io.Writer, cfg *CustomHandlerCfg) *CustomHandler {
 	} else {
 		handler.Handler = slog.NewTextHandler(w, handlerOpts)
 	}
+
+	handler.Handler = handler.Handler.WithAttrs(cfg.StaticAttributes)
 
 	return handler
 }
