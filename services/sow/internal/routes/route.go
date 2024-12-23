@@ -12,6 +12,11 @@ import (
 func NewSowRouter(log *slog.Logger) http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("GET /food/", handleGet(log))
+	mux.HandleFunc("POST /food/", handleCreate(log))
+	mux.HandleFunc("PUT /food/", handleUpdate(log))
+	mux.HandleFunc("DELETE /food/", handleDelete(log))
+
 	mux.HandleFunc("GET /echo/", handleEcho(log, "ay"))
 	mux.HandleFunc("GET /fail/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "fail", http.StatusBadRequest)
