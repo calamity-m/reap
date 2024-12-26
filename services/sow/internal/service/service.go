@@ -47,16 +47,8 @@ func (s *FoodRecordService) Delete(uuid.UUID) error {
 	return nil
 }
 
-func (s *FoodRecordService) DeleteFiltered(FoodRecord) error {
-	return nil
-}
-
 func (s *FoodRecordService) Update(uuid.UUID) error {
 	return nil
-}
-
-func (s *FoodRecordService) UpdateFiltered(FoodRecord) (FoodRecord, error) {
-	return FoodRecord{}, nil
 }
 
 func NewFoodRecorderService() (*FoodRecordService, error) {

@@ -11,7 +11,8 @@ import (
 func NewSowRouter(log *slog.Logger, frs *service.FoodRecordService) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc(GetIdPath, handleGetId(log, frs))
+	mux.HandleFunc(GetPath, handleGet(log, frs))
+	mux.HandleFunc(GetFilteredPath, handleGetFiltered(log, frs))
 	mux.HandleFunc(CreatePath, handleCreate(log, frs))
 	mux.HandleFunc(UpdatePath, handleUpdate(log, frs))
 	mux.HandleFunc(DeletePath, handleDelete(log, frs))

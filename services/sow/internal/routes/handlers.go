@@ -10,13 +10,14 @@ import (
 )
 
 const (
-	GetIdPath  = "GET /food/{id}"
-	CreatePath = "POST /food/"
-	DeletePath = "DELETE /food/"
-	UpdatePath = "PUT /food/"
+	GetPath         = "GET {useruuid}/food/{uuid}"
+	GetFilteredPath = "GET {uuseruuid}/food/"
+	CreatePath      = "POST {uuseruuid}/food/"
+	DeletePath      = "DELETE {uuseruuid}/food/"
+	UpdatePath      = "PUT {uuseruuid}/food/"
 )
 
-func handleGetId(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
+func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -56,6 +57,17 @@ func handleGetId(log *slog.Logger, frs *service.FoodRecordService) func(w http.R
 		)
 
 		rest.EncodeJSON(w, 200, record)
+
+	}
+}
+
+func handleGetFiltered(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		log.InfoContext(r.Context(), "TODO")
+
+		rest.EncodeMessage(w, 500, "TODO GET FILTERED")
 
 	}
 }
