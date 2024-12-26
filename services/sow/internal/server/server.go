@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/calamity-m/reap/services/sow/internal/routes"
+	"github.com/calamity-m/reap/services/sow/internal/service"
 )
 
 type SowServer struct {
@@ -16,18 +17,24 @@ type SowServer struct {
 	shutdownGrace time.Duration
 }
 
-func NewSowServer(log *slog.Logger, address string) *SowServer {
+func NewSowServer(log *slog.Logger, address string) (*SowServer, error) {
+
+	frs, err := service.NewFoodRecorderService()
+
+	if err != nil {
+		return nil, err
+	}
 
 	srv := &SowServer{
 		srv: http.Server{
 			Addr:    address,
-			Handler: routes.NewSowRouter(log),
+			Handler: routes.NewSowRouter(log, frs),
 		},
 		log:           log,
 		shutdownGrace: 1,
 	}
 
-	return srv
+	return srv, nil
 }
 
 func (s *SowServer) ListenAndServe() error {

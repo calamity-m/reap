@@ -1,23 +1,21 @@
 package routes
 
 import (
-	"fmt"
 	"log/slog"
 	"net/http"
 
 	"github.com/calamity-m/reap/pkg/middleware"
-	"github.com/calamity-m/reap/pkg/rest"
+	"github.com/calamity-m/reap/services/sow/internal/service"
 )
 
-func NewSowRouter(log *slog.Logger) http.Handler {
+func NewSowRouter(log *slog.Logger, frs *service.FoodRecordService) http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /food/", handleGet(log))
-	mux.HandleFunc("POST /food/", handleCreate(log))
-	mux.HandleFunc("PUT /food/", handleUpdate(log))
-	mux.HandleFunc("DELETE /food/", handleDelete(log))
+	mux.HandleFunc(GetIdPath, handleGetId(log, frs))
+	mux.HandleFunc(CreatePath, handleCreate(log, frs))
+	mux.HandleFunc(UpdatePath, handleUpdate(log, frs))
+	mux.HandleFunc(DeletePath, handleDelete(log, frs))
 
-	mux.HandleFunc("GET /echo/", handleEcho(log, "ay"))
 	mux.HandleFunc("GET /fail/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "fail", http.StatusBadRequest)
 	})
@@ -28,31 +26,4 @@ func NewSowRouter(log *slog.Logger) http.Handler {
 	)
 
 	return wrapper(mux)
-}
-
-func handleEcho(log *slog.Logger, greet string) func(w http.ResponseWriter, r *http.Request) {
-
-	type echo struct {
-		Greeting string
-		Request  string
-		Echo     string
-	}
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-		log.InfoContext(r.Context(), "echo test log")
-		out := &echo{
-			Greeting: greet,
-			Request:  fmt.Sprintf("%v", r),
-			Echo:     "Echhoooo",
-		}
-
-		err := rest.EncodeJSON(w, 200, out)
-
-		if err != nil {
-			w.WriteHeader(500)
-			fmt.Fprint(w, `{"error": "failed to encode response due to internal server error"}\n`)
-			log.Error(fmt.Sprintf("Failed to encode response due to: %v", err.Error()))
-		}
-	}
 }

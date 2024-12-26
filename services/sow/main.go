@@ -49,9 +49,14 @@ func main() {
 		RecordRequestId: true,
 	}))
 
-	sow := server.NewSowServer(logger, "localhost:8099")
-	logger.Info("Initialized server, moving to initiating http listen")
+	sow, err := server.NewSowServer(logger, "localhost:8099")
 
+	if err != nil {
+		logger.Error(fmt.Sprintf("Encountered error creating sow server: %v", err))
+		os.Exit(1)
+	}
+
+	logger.Info("Initialized server, moving to initiating http listen")
 	if err := run(sow); err != nil {
 		logger.Error(fmt.Sprintf("Encountered error running sow server: %v", err))
 		os.Exit(1)
