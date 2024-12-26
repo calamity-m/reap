@@ -8,7 +8,7 @@ import (
 
 type FoodRecord struct {
 	Uuid        uuid.UUID `json:"id"`
-	UserUuid    uuid.UUID `json:"-"`
+	UserId      uuid.UUID `json:"-"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	KJ          float32   `json:"kj,omitempty"`
@@ -31,7 +31,7 @@ func (r FoodRecord) ConvertOunce() float32 {
 
 type FoodRecordService struct{}
 
-func (s *FoodRecordService) Get(uuid.UUID) (FoodRecord, error) {
+func (s *FoodRecordService) Get(userId uuid.UUID, uuid uuid.UUID) (FoodRecord, error) {
 	return FoodRecord{}, nil
 }
 
