@@ -10,21 +10,21 @@ import (
 )
 
 const (
-	GetPath         = "GET {useruuid}/food/{uuid}"
-	GetFilteredPath = "GET {useruuid}/food/"
-	CreatePath      = "POST {useruuid}/food/"
-	DeletePath      = "DELETE {useruuid}/food/"
-	UpdatePath      = "PUT {useruuid}/food/"
+	GetPath         = "GET {userid}/food/{uuid}"
+	GetFilteredPath = "GET {userid}/food/"
+	CreatePath      = "POST {userid}/food/"
+	DeletePath      = "DELETE {userid}/food/"
+	UpdatePath      = "PUT {userid}/food/"
 )
 
 func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		userId, err := uuid.Parse(r.PathValue("useruuid"))
+		userId, err := uuid.Parse(r.PathValue("userid"))
 
 		if err != nil {
-			log.LogAttrs(r.Context(), slog.LevelError, "failed to parse user uuid", slog.String("useruuid", userId.String()))
+			log.LogAttrs(r.Context(), slog.LevelError, "failed to parse user uuid", slog.String("userid", userId.String()))
 			rest.EncodeMessage(w, http.StatusBadRequest, "invalid path")
 			return
 		}
@@ -55,7 +55,7 @@ func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.Res
 				// using slog.Any("record", record)
 				"record",
 				slog.String("uuid", record.Uuid.String()),
-				slog.String("user_uuid", record.UserId.String()),
+				slog.String("userid", record.UserId.String()),
 				slog.String("name", record.Name),
 				slog.String("description", record.Description),
 				slog.Float64("kj", float64(record.KJ)),
