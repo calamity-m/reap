@@ -17,10 +17,6 @@ func NewSowRouter(log *slog.Logger, frs *service.FoodRecordService) http.Handler
 	mux.HandleFunc(UpdatePath, handleUpdate(log, frs))
 	mux.HandleFunc(DeletePath, handleDelete(log, frs))
 
-	mux.HandleFunc("GET /fail/", func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "fail", http.StatusBadRequest)
-	})
-
 	wrapper := middleware.Wrap(
 		middleware.RequestIDMiddleware(log, true),
 		middleware.LoggingMiddleware(log),

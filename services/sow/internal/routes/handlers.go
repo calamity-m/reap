@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	GetPath         = "GET {userid}/food/{uuid}"
-	GetFilteredPath = "GET {userid}/food/"
-	CreatePath      = "POST {userid}/food/"
-	DeletePath      = "DELETE {userid}/food/"
-	UpdatePath      = "PUT {userid}/food/"
+	GetPath         = "GET /{userid}/food/{uuid}"
+	GetFilteredPath = "GET /{userid}/food/"
+	CreatePath      = "POST /{userid}/food/"
+	DeletePath      = "DELETE /{userid}/food/"
+	UpdatePath      = "PUT /{userid}/food/"
 )
 
 func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.Res
 
 		if err != nil {
 			log.LogAttrs(r.Context(), slog.LevelError, "Failed to get food record", slog.String("id", uuid.String()))
-			rest.EncodeMessage(w, http.StatusNotFound, "Could not find record")
+			rest.EncodeMessage(w, http.StatusNotFound, "no record found")
 			return
 		}
 
@@ -76,8 +76,48 @@ func handleGetFiltered(log *slog.Logger, frs *service.FoodRecordService) func(w 
 
 		log.InfoContext(r.Context(), "TODO")
 
-		rest.EncodeMessage(w, 500, "TODO GET FILTERED")
+		filter, err := rest.DecodeJSON[service.FoodRecord](r)
 
+		if err != nil {
+			log.LogAttrs(r.Context(), slog.LevelError, "failed to parse supplied body due to error", slog.String("error", err.Error()))
+			rest.EncodeMessage(w, http.StatusBadRequest, "filter could not be constructed from passed body")
+			return
+		}
+
+		userId, err := uuid.Parse(r.PathValue("userid"))
+
+		if err != nil {
+			log.LogAttrs(r.Context(), slog.LevelError, "failed to parse user uuid", slog.String("userid", userId.String()))
+			rest.EncodeMessage(w, http.StatusBadRequest, "invalid path")
+			return
+		}
+
+		if filter.UserId != userId {
+			log.LogAttrs(
+				r.Context(),
+				slog.LevelError,
+				"mismatched userid",
+				slog.String("userid", userId.String()),
+				slog.Any("filter", filter),
+			)
+			rest.EncodeMessage(w, http.StatusBadRequest, "mismatched user id in filter")
+			return
+		}
+
+		records, err := frs.GetFiltered(filter)
+
+		if err != nil {
+			log.LogAttrs(
+				r.Context(),
+				slog.LevelError,
+				"no records found",
+				slog.String("userid", userId.String()),
+				slog.Any("filter", filter),
+			)
+			rest.EncodeMessage(w, http.StatusNotFound, "no records found")
+		}
+
+		rest.EncodeJSON(w, 200, records)
 	}
 }
 

@@ -35,8 +35,8 @@ func (s *FoodRecordService) Get(userId uuid.UUID, uuid uuid.UUID) (FoodRecord, e
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) GetFiltered(FoodRecord) (FoodRecord, error) {
-	return FoodRecord{}, nil
+func (s *FoodRecordService) GetFiltered(FoodRecord) ([]FoodRecord, error) {
+	return []FoodRecord{}, nil
 }
 
 func (s *FoodRecordService) Create(FoodRecord) (FoodRecord, error) {
