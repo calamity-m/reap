@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"time"
 
+	"github.com/calamity-m/reap/services/sow/internal/persistence"
 	"github.com/google/uuid"
 )
 
@@ -85,6 +86,19 @@ func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, 
 	)
 
 	return nil
+}
+
+func transformRecord(userId uuid.UUID, fr FoodRecord) persistence.FoodRecordEntry {
+	return persistence.FoodRecordEntry{
+		UserId:      userId,
+		Uuid:        fr.Uuid,
+		Name:        fr.Name,
+		Description: fr.Description,
+		KJ:          fr.KJ,
+		ML:          fr.ML,
+		Gram:        fr.Gram,
+		Created:     fr.Created,
+	}
 }
 
 func NewFoodRecorderService(logger *slog.Logger) (*FoodRecordService, error) {
