@@ -35,19 +35,19 @@ func (s *FoodRecordService) Get(userId uuid.UUID, uuid uuid.UUID) (FoodRecord, e
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) GetFiltered(FoodRecord) ([]FoodRecord, error) {
+func (s *FoodRecordService) GetFiltered(fr FoodRecord) ([]FoodRecord, error) {
 	return []FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) Create(FoodRecord) (FoodRecord, error) {
+func (s *FoodRecordService) Create(fr FoodRecord) (FoodRecord, error) {
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) Delete(uuid.UUID) error {
+func (s *FoodRecordService) Delete(userId uuid.UUID, uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *FoodRecordService) Update(uuid.UUID) error {
+func (s *FoodRecordService) Update(uuid uuid.UUID, fr FoodRecord) error {
 	return nil
 }
 

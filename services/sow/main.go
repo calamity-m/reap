@@ -45,8 +45,9 @@ func run(srv *server.SowServer) error {
 func main() {
 
 	logger := slog.New(logging.NewCustomizedHandler(os.Stderr, &logging.CustomHandlerCfg{
-		Structed:        true,
+		Structed:        false,
 		RecordRequestId: true,
+		Level:           slog.LevelDebug,
 	}))
 
 	sow, err := server.NewSowServer(logger, "localhost:8099")
