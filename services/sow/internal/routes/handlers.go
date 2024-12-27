@@ -38,7 +38,7 @@ func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.Res
 		}
 
 		// Verify if we have some entity matching the provided user id/food record id combo
-		record, err := frs.Get(userId, uuid)
+		record, err := frs.Get(r.Context(), userId, uuid)
 		if err != nil {
 			// TODO: err type checking here might be helpful
 			log.LogAttrs(r.Context(), slog.LevelError, "Failed to get food record", slog.String("id", uuid.String()))
@@ -94,7 +94,7 @@ func handleGetFiltered(log *slog.Logger, frs *service.FoodRecordService) func(w 
 
 		// Verify if we have any entities matching the filter
 		filter.UserId = userId // set the user id as we want to ignore it in parsing
-		records, err := frs.GetFiltered(filter)
+		records, err := frs.GetFiltered(r.Context(), filter)
 		if err != nil {
 			log.LogAttrs(
 				r.Context(),
@@ -149,7 +149,7 @@ func handleCreate(log *slog.Logger, frs *service.FoodRecordService) func(w http.
 
 		// Verify if we can create the record
 		record.UserId = userId // set the user id as we want to ignore it in parsing
-		created, err := frs.Create(record)
+		created, err := frs.Create(r.Context(), record)
 		if err != nil {
 			// TODO: handle err type. Maybe the user id not found - etc.
 			log.LogAttrs(r.Context(), slog.LevelError, "error occured while creating record", slog.String("error", err.Error()))
@@ -192,7 +192,7 @@ func handleUpdate(log *slog.Logger, frs *service.FoodRecordService) func(w http.
 
 		// Verify if we were able to update the record
 		record.UserId = userId // set the user id as we want to ignore it in parsing
-		err = frs.Update(uuid, record)
+		err = frs.Update(r.Context(), uuid, record)
 		if err != nil {
 			// TODO: handle err type. Maybe the record id wasn't found, user id not found - etc.
 			log.LogAttrs(r.Context(), slog.LevelError, "error occured while updating record", slog.String("error", err.Error()))
@@ -227,7 +227,7 @@ func handleDelete(log *slog.Logger, frs *service.FoodRecordService) func(w http.
 		}
 
 		// Verify if we were able to delete the record
-		err = frs.Delete(userId, uuid)
+		err = frs.Delete(r.Context(), userId, uuid)
 		if err != nil {
 			log.LogAttrs(r.Context(), slog.LevelError, "error occured while deleting record", slog.String("error", err.Error()))
 			rest.EncodeMessage(w, http.StatusInternalServerError, "failed to delete food record")

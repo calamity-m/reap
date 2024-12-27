@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"log/slog"
 	"time"
 
 	"github.com/google/uuid"
@@ -29,28 +31,31 @@ func (r FoodRecord) ConvertOunce() float32 {
 	return r.Gram / 28.35
 }
 
-type FoodRecordService struct{}
+type FoodRecordService struct {
+	log *slog.Logger
+}
 
-func (s *FoodRecordService) Get(userId uuid.UUID, uuid uuid.UUID) (FoodRecord, error) {
+func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) (FoodRecord, error) {
+	s.log.DebugContext()
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) GetFiltered(fr FoodRecord) ([]FoodRecord, error) {
+func (s *FoodRecordService) GetFiltered(ctx context.Context, fr FoodRecord) ([]FoodRecord, error) {
 	return []FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) Create(fr FoodRecord) (FoodRecord, error) {
+func (s *FoodRecordService) Create(ctx context.Context, fr FoodRecord) (FoodRecord, error) {
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) Delete(userId uuid.UUID, uuid uuid.UUID) error {
+func (s *FoodRecordService) Delete(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) error {
 	return nil
 }
 
-func (s *FoodRecordService) Update(uuid uuid.UUID, fr FoodRecord) error {
+func (s *FoodRecordService) Update(ctx context.Context, uuid uuid.UUID, fr FoodRecord) error {
 	return nil
 }
 
-func NewFoodRecorderService() (*FoodRecordService, error) {
+func NewFoodRecorderService(log *slog.Logger) (*FoodRecordService, error) {
 	return &FoodRecordService{}, nil
 }

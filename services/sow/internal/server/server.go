@@ -19,7 +19,7 @@ type SowServer struct {
 
 func NewSowServer(log *slog.Logger, address string) (*SowServer, error) {
 
-	frs, err := service.NewFoodRecorderService()
+	frs, err := service.NewFoodRecorderService(log)
 
 	if err != nil {
 		return nil, err
