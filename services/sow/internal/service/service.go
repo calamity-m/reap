@@ -36,26 +36,58 @@ type FoodRecordService struct {
 }
 
 func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) (FoodRecord, error) {
-	s.log.DebugContext()
+	s.log.DebugContext(
+		ctx,
+		"attempting to get food record",
+		slog.String("userid", userId.String()),
+		slog.String("uuid", uuid.String()),
+	)
+
 	return FoodRecord{}, nil
 }
 
 func (s *FoodRecordService) GetFiltered(ctx context.Context, fr FoodRecord) ([]FoodRecord, error) {
+	s.log.DebugContext(
+		ctx,
+		"attempting to get food records based on a filter",
+		slog.Any("filter", fr),
+	)
+
 	return []FoodRecord{}, nil
 }
 
 func (s *FoodRecordService) Create(ctx context.Context, fr FoodRecord) (FoodRecord, error) {
+	s.log.DebugContext(
+		ctx,
+		"attempting to create food record",
+		slog.Any("record", fr),
+	)
+
 	return FoodRecord{}, nil
 }
 
 func (s *FoodRecordService) Delete(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) error {
+	s.log.DebugContext(
+		ctx,
+		"attempting to get delete food record",
+		slog.String("userid", userId.String()),
+		slog.String("uuid", uuid.String()),
+	)
+
 	return nil
 }
 
 func (s *FoodRecordService) Update(ctx context.Context, uuid uuid.UUID, fr FoodRecord) error {
+	s.log.DebugContext(
+		ctx,
+		"attempting to update specific food record",
+		slog.Any("record", fr),
+		slog.String("uuid", uuid.String()),
+	)
+
 	return nil
 }
 
-func NewFoodRecorderService(log *slog.Logger) (*FoodRecordService, error) {
-	return &FoodRecordService{}, nil
+func NewFoodRecorderService(logger *slog.Logger) (*FoodRecordService, error) {
+	return &FoodRecordService{log: logger}, nil
 }
