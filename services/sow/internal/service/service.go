@@ -10,7 +10,6 @@ import (
 
 type FoodRecord struct {
 	Uuid        uuid.UUID `json:"id"`
-	UserId      uuid.UUID `json:"-"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	KJ          float32   `json:"kj,omitempty"`
@@ -46,7 +45,7 @@ func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid
 	return FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) GetFiltered(ctx context.Context, fr FoodRecord) ([]FoodRecord, error) {
+func (s *FoodRecordService) GetFiltered(ctx context.Context, userId uuid.UUID, fr FoodRecord) ([]FoodRecord, error) {
 	s.log.DebugContext(
 		ctx,
 		"attempting to get food records based on a filter",
@@ -56,7 +55,7 @@ func (s *FoodRecordService) GetFiltered(ctx context.Context, fr FoodRecord) ([]F
 	return []FoodRecord{}, nil
 }
 
-func (s *FoodRecordService) Create(ctx context.Context, fr FoodRecord) (FoodRecord, error) {
+func (s *FoodRecordService) Create(ctx context.Context, userId uuid.UUID, fr FoodRecord) (FoodRecord, error) {
 	s.log.DebugContext(
 		ctx,
 		"attempting to create food record",
@@ -77,7 +76,7 @@ func (s *FoodRecordService) Delete(ctx context.Context, userId uuid.UUID, uuid u
 	return nil
 }
 
-func (s *FoodRecordService) Update(ctx context.Context, uuid uuid.UUID, fr FoodRecord) error {
+func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, fr FoodRecord) error {
 	s.log.DebugContext(
 		ctx,
 		"attempting to update specific food record",

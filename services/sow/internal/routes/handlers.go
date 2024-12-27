@@ -56,7 +56,7 @@ func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.Res
 				// using slog.Any("record", record)
 				"record",
 				slog.String("uuid", record.Uuid.String()),
-				slog.String("userid", record.UserId.String()),
+				slog.String("userid", userId.String()),
 				slog.String("name", record.Name),
 				slog.String("description", record.Description),
 				slog.Float64("kj", float64(record.KJ)),
@@ -93,8 +93,7 @@ func handleGetFiltered(log *slog.Logger, frs *service.FoodRecordService) func(w 
 		}
 
 		// Verify if we have any entities matching the filter
-		filter.UserId = userId // set the user id as we want to ignore it in parsing
-		records, err := frs.GetFiltered(r.Context(), filter)
+		records, err := frs.GetFiltered(r.Context(), userId, filter)
 		if err != nil {
 			log.LogAttrs(
 				r.Context(),
@@ -148,8 +147,7 @@ func handleCreate(log *slog.Logger, frs *service.FoodRecordService) func(w http.
 		}
 
 		// Verify if we can create the record
-		record.UserId = userId // set the user id as we want to ignore it in parsing
-		created, err := frs.Create(r.Context(), record)
+		created, err := frs.Create(r.Context(), userId, record)
 		if err != nil {
 			// TODO: handle err type. Maybe the user id not found - etc.
 			log.LogAttrs(r.Context(), slog.LevelError, "error occured while creating record", slog.String("error", err.Error()))
@@ -191,8 +189,7 @@ func handleUpdate(log *slog.Logger, frs *service.FoodRecordService) func(w http.
 		}
 
 		// Verify if we were able to update the record
-		record.UserId = userId // set the user id as we want to ignore it in parsing
-		err = frs.Update(r.Context(), uuid, record)
+		err = frs.Update(r.Context(), userId, uuid, record)
 		if err != nil {
 			// TODO: handle err type. Maybe the record id wasn't found, user id not found - etc.
 			log.LogAttrs(r.Context(), slog.LevelError, "error occured while updating record", slog.String("error", err.Error()))
