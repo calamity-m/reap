@@ -15,6 +15,7 @@
 *.out
 
 # Go binaries
+builds/
 ./sow
 ./reap
 ./till
