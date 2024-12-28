@@ -60,7 +60,7 @@ func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.Res
 				slog.String("name", record.Name),
 				slog.String("description", record.Description),
 				slog.Float64("kj", float64(record.KJ)),
-				slog.Float64("gram", float64(record.Gram)),
+				slog.Float64("gram", float64(record.Grams)),
 				slog.Float64("ml", float64(record.ML)),
 				slog.Time("created", record.Created),
 			),

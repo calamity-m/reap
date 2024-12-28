@@ -13,7 +13,7 @@ type FoodRecordEntry struct {
 	Name        string
 	Description string
 	KJ          float32
-	Gram        float32
+	Grams       float32
 	ML          float32
 	Created     time.Time
 }

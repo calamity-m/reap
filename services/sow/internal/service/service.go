@@ -18,7 +18,7 @@ type FoodRecord struct {
 	KJ float32 `json:"kj,omitempty"`
 	// Default used for storage of mass, if Gram and Oz are provided
 	// Gram will always be selected
-	Gram float32 `json:"grams,omitempty"`
+	Grams float32 `json:"grams,omitempty"`
 	// Default used for storage of volume, if ML and FLOz are provided
 	// ML will always be selected
 	ML       float32   `json:"ml,omitempty"`
@@ -26,18 +26,6 @@ type FoodRecord struct {
 	Oz       float32   `json:"oz,omitempty"`
 	FLOz     float32   `json:"floz,omitempty"`
 	Created  time.Time `json:"created"`
-}
-
-func (r FoodRecord) ConvertCalories() float32 {
-	return r.KJ / 4.184
-}
-
-func (r FoodRecord) ConvertPound() float32 {
-	return r.Gram / 453.6
-}
-
-func (r FoodRecord) ConvertOunce() float32 {
-	return r.Gram / 28.35
 }
 
 type FoodRecordService struct {
@@ -52,7 +40,11 @@ func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid
 		slog.String("uuid", uuid.String()),
 	)
 
-	return FoodRecord{}, nil
+	dummy := persistence.FoodRecordEntry{}
+
+	record := createRecord(dummy)
+
+	return record, nil
 }
 
 func (s *FoodRecordService) GetFiltered(ctx context.Context, userId uuid.UUID, fr FoodRecord) ([]FoodRecord, error) {
@@ -94,22 +86,83 @@ func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, 
 		slog.String("uuid", uuid.String()),
 	)
 
-	return nil
-}
+	entry := createEntry(userId, fr)
 
-func transformRecord(userId uuid.UUID, fr FoodRecord) persistence.FoodRecordEntry {
-	return persistence.FoodRecordEntry{
-		UserId:      userId,
-		Uuid:        fr.Uuid,
-		Name:        fr.Name,
-		Description: fr.Description,
-		KJ:          fr.KJ,
-		ML:          fr.ML,
-		Gram:        fr.Gram,
-		Created:     fr.Created,
-	}
+	s.log.DebugContext(ctx, "wip", slog.Any("entry", entry))
+
+	return nil
 }
 
 func NewFoodRecorderService(logger *slog.Logger) (*FoodRecordService, error) {
 	return &FoodRecordService{log: logger}, nil
+}
+
+func createRecord(entry persistence.FoodRecordEntry) FoodRecord {
+	record := FoodRecord{
+		Uuid:        entry.Uuid,
+		Name:        entry.Name,
+		Description: entry.Description,
+		KJ:          entry.KJ,
+		Grams:       entry.Grams,
+		ML:          entry.ML,
+		Calories:    kjToCals(entry.KJ),
+		Oz:          gramsToOz(entry.Grams),
+		FLOz:        mlToFLOz(entry.ML),
+	}
+
+	return record
+}
+
+func createEntry(userId uuid.UUID, fr FoodRecord) persistence.FoodRecordEntry {
+
+	entry := persistence.FoodRecordEntry{
+		UserId:      userId,
+		Uuid:        fr.Uuid,
+		Name:        fr.Name,
+		Description: fr.Description,
+		KJ:          calsToKJ(fr.Calories),
+		ML:          flOzToML(fr.FLOz),
+		Grams:       ozToGrams(fr.Oz),
+		Created:     fr.Created,
+	}
+
+	// Yucky imperial system. Premature optimization
+	// here isn't worth it, so just on every single
+	// create we'll blat over the imperial
+	// with metric if provided
+	if fr.KJ != 0 {
+		entry.KJ = fr.KJ
+	}
+	if fr.Grams != 0 {
+		entry.Grams = fr.Grams
+	}
+	if fr.ML != 0 {
+		entry.ML = fr.ML
+	}
+
+	return entry
+}
+
+func calsToKJ(cals float32) float32 {
+	return cals * 4.184
+}
+
+func ozToGrams(oz float32) float32 {
+	return oz * 28.35
+}
+
+func flOzToML(flOz float32) float32 {
+	return flOz * 29.574
+}
+
+func kjToCals(kj float32) float32 {
+	return kj / 4.184
+}
+
+func gramsToOz(grams float32) float32 {
+	return grams / 28.35
+}
+
+func mlToFLOz(ml float32) float32 {
+	return ml / 29.574
 }
