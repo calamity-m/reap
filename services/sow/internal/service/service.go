@@ -13,13 +13,19 @@ type FoodRecord struct {
 	Uuid        uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
-	KJ          float32   `json:"kj,omitempty"`
-	Gram        float32   `json:"grams,omitempty"`
-	ML          float32   `json:"ml,omitempty"`
-	Calories    float32   `json:"calories,omitempty"`
-	Oz          float32   `json:"oz,omitempty"`
-	FLOz        float32   `json:"floz,omitempty"`
-	Created     time.Time `json:"created"`
+	// Default used for storage of energy, if kj and calories are provided
+	// KJ will always be selected
+	KJ float32 `json:"kj,omitempty"`
+	// Default used for storage of mass, if Gram and Oz are provided
+	// Gram will always be selected
+	Gram float32 `json:"grams,omitempty"`
+	// Default used for storage of volume, if ML and FLOz are provided
+	// ML will always be selected
+	ML       float32   `json:"ml,omitempty"`
+	Calories float32   `json:"calories,omitempty"`
+	Oz       float32   `json:"oz,omitempty"`
+	FLOz     float32   `json:"floz,omitempty"`
+	Created  time.Time `json:"created"`
 }
 
 func (r FoodRecord) ConvertCalories() float32 {
