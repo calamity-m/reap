@@ -16,6 +16,9 @@ type FoodRecord struct {
 	KJ          float32   `json:"kj,omitempty"`
 	Gram        float32   `json:"grams,omitempty"`
 	ML          float32   `json:"ml,omitempty"`
+	Calories    float32   `json:"calories,omitempty"`
+	Oz          float32   `json:"oz,omitempty"`
+	FLOz        float32   `json:"floz,omitempty"`
 	Created     time.Time `json:"created"`
 }
 
