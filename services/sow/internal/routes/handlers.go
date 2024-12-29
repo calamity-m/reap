@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	GetPath         = "GET /{userid}/food/{uuid}"
-	UpdatePath      = "PUT /{userid}/food/{uuid}"
-	DeletePath      = "DELETE /{userid}/food/{uuid}"
-	GetFilteredPath = "GET /{userid}/food/"
-	CreatePath      = "POST /{userid}/food/"
+	GetPath         = "GET /food/{userid}/{uuid}"
+	UpdatePath      = "PUT /food/{userid}/{uuid}"
+	DeletePath      = "DELETE /food/{userid}/{uuid}"
+	GetFilteredPath = "GET /food/{userid}"
+	CreatePath      = "POST /food/{userid}"
 )
 
 func handleGet(log *slog.Logger, frs *service.FoodRecordService) func(w http.ResponseWriter, r *http.Request) {
