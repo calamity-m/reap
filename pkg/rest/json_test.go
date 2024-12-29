@@ -177,3 +177,25 @@ func TestDecodeValid(t *testing.T) {
 		}
 	})
 }
+
+func TestEncodeError(t *testing.T) {
+
+	t.Run("valid struct encoding", func(t *testing.T) {
+		message := "bad error"
+
+		want := `{"error":"bad error"}`
+		response := httptest.NewRecorder()
+
+		EncodeError(response, 500, message)
+
+		if response.Code != 500 {
+			t.Errorf("got %d status code but want %d", response.Code, 500)
+		}
+
+		body := response.Body.String()
+		trimmed := strings.TrimSuffix(body, "\n")
+		if trimmed != want {
+			t.Errorf("got %s but want %s", trimmed, want)
+		}
+	})
+}

@@ -6,12 +6,14 @@ import (
 	"net/http"
 )
 
-type JSONMessage struct {
-	Message string `json:"message"`
+type jsonErrMessage struct {
+	Error string `json:"error"`
 }
 
-func EncodeMessage(w http.ResponseWriter, status int, msg string) error {
-	return EncodeJSON(w, status, JSONMessage{Message: msg})
+func EncodeError(w http.ResponseWriter, status int, msg string) {
+	// Encode a response message, but ignore any errors that might occur
+	// due to writing
+	_ = EncodeJSON(w, status, jsonErrMessage{msg})
 }
 
 func EncodeJSON[T any](w http.ResponseWriter, status int, val T) error {
@@ -19,7 +21,7 @@ func EncodeJSON[T any](w http.ResponseWriter, status int, val T) error {
 	w.WriteHeader(status)
 
 	if err := json.NewEncoder(w).Encode(val); err != nil {
-		return fmt.Errorf("failed encoding json: %v", err)
+		return fmt.Errorf("failed encoding json: %w", err)
 	}
 
 	return nil
@@ -29,7 +31,7 @@ func DecodeJSON[T any](r *http.Request) (T, error) {
 	var val T
 
 	if err := json.NewDecoder(r.Body).Decode(&val); err != nil {
-		return val, fmt.Errorf("failed decoding json: %v", err)
+		return val, fmt.Errorf("failed decoding json: %w", err)
 	}
 
 	return val, nil
