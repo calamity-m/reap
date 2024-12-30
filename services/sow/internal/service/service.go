@@ -3,42 +3,18 @@ package service
 import (
 	"context"
 	"log/slog"
-	"time"
 
+	"github.com/calamity-m/reap/proto/sow/v1"
 	"github.com/calamity-m/reap/services/sow/internal/persistence"
 	"github.com/google/uuid"
 )
 
-type FoodRecord struct {
-	Uuid        uuid.UUID `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	// Default used for storage of energy, if kj and calories are provided
-	// KJ will always be selected
-	KJ float32 `json:"kj,omitempty"`
-	// Default used for storage of mass, if Gram and Oz are provided
-	// Gram will always be selected
-	Grams float32 `json:"grams,omitempty"`
-	// Default used for storage of volume, if ML and FLOz are provided
-	// ML will always be selected
-	ML       float32   `json:"ml,omitempty"`
-	Calories float32   `json:"calories,omitempty"`
-	Oz       float32   `json:"oz,omitempty"`
-	FLOz     float32   `json:"floz,omitempty"`
-	Created  time.Time `json:"created"`
-}
-
 type FoodRecordService struct {
-	log *slog.Logger
+	store persistence.FoodStore
+	log   *slog.Logger
 }
 
-func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) (FoodRecord, error) {
-	s.log.DebugContext(
-		ctx,
-		"attempting to get food record",
-		slog.String("userid", userId.String()),
-		slog.String("uuid", uuid.String()),
-	)
+func (s *FoodRecordService) Get(ctx context.Context, uuid uuid.UUID) (*sow.Record, error) {
 
 	dummy := persistence.FoodRecordEntry{}
 
@@ -47,97 +23,73 @@ func (s *FoodRecordService) Get(ctx context.Context, userId uuid.UUID, uuid uuid
 	return record, nil
 }
 
-func (s *FoodRecordService) GetFiltered(ctx context.Context, userId uuid.UUID, fr FoodRecord) ([]FoodRecord, error) {
-	s.log.DebugContext(
-		ctx,
-		"attempting to get food records based on a filter",
-		slog.Any("filter", fr),
-	)
+func (s *FoodRecordService) GetFiltered(ctx context.Context, userId uuid.UUID, record *sow.Record) ([]*sow.Record, error) {
 
-	return []FoodRecord{}, nil
+	return nil, nil
 }
 
-func (s *FoodRecordService) Create(ctx context.Context, userId uuid.UUID, fr FoodRecord) (FoodRecord, error) {
-	s.log.DebugContext(
-		ctx,
-		"attempting to create food record",
-		slog.Any("record", fr),
-	)
+func (s *FoodRecordService) Create(ctx context.Context, userId uuid.UUID, record *sow.Record) (*sow.Record, error) {
 
-	return FoodRecord{}, nil
+	return &sow.Record{}, nil
 }
 
 func (s *FoodRecordService) Delete(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) error {
-	s.log.DebugContext(
-		ctx,
-		"attempting to get delete food record",
-		slog.String("userid", userId.String()),
-		slog.String("uuid", uuid.String()),
-	)
 
 	return nil
 }
 
-func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, fr FoodRecord) error {
-	s.log.DebugContext(
-		ctx,
-		"attempting to update specific food record",
-		slog.Any("record", fr),
-		slog.String("uuid", uuid.String()),
-	)
-
-	entry := createEntry(userId, fr)
+func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, record *sow.Record) error {
+	entry := createEntry(userId, record)
 
 	s.log.DebugContext(ctx, "wip", slog.Any("entry", entry))
 
 	return nil
 }
 
-func NewFoodRecorderService(logger *slog.Logger) (*FoodRecordService, error) {
-	return &FoodRecordService{log: logger}, nil
+func NewFoodRecorderService(logger *slog.Logger, store persistence.FoodStore) (*FoodRecordService, error) {
+	return &FoodRecordService{log: logger, store: store}, nil
 }
 
-func createRecord(entry persistence.FoodRecordEntry) FoodRecord {
-	record := FoodRecord{
-		Uuid:        entry.Uuid,
+func createRecord(entry persistence.FoodRecordEntry) *sow.Record {
+	record := &sow.Record{
+		UserId:      entry.UserId.String(),
 		Name:        entry.Name,
 		Description: entry.Description,
-		KJ:          entry.KJ,
+		Kj:          entry.KJ,
 		Grams:       entry.Grams,
-		ML:          entry.ML,
+		Ml:          entry.ML,
 		Calories:    kjToCals(entry.KJ),
 		Oz:          gramsToOz(entry.Grams),
-		FLOz:        mlToFLOz(entry.ML),
+		FlOz:        mlToFLOz(entry.ML),
 	}
 
 	return record
 }
 
-func createEntry(userId uuid.UUID, fr FoodRecord) persistence.FoodRecordEntry {
+func createEntry(userId uuid.UUID, record *sow.Record) persistence.FoodRecordEntry {
 
 	entry := persistence.FoodRecordEntry{
 		UserId:      userId,
-		Uuid:        fr.Uuid,
-		Name:        fr.Name,
-		Description: fr.Description,
-		KJ:          calsToKJ(fr.Calories),
-		ML:          flOzToML(fr.FLOz),
-		Grams:       ozToGrams(fr.Oz),
-		Created:     fr.Created,
+		Name:        record.Name,
+		Description: record.Description,
+		KJ:          calsToKJ(record.Calories),
+		ML:          flOzToML(record.FlOz),
+		Grams:       ozToGrams(record.Oz),
+		Created:     record.Time.AsTime(),
 	}
 
 	// Yucky imperial system. Premature optimization
 	// here isn't worth it, so just on every single
 	// create we'll blat over the imperial
 	// with metric if provided
-	if fr.KJ != 0 {
-		entry.KJ = fr.KJ
+	if record.Kj != 0 {
+		entry.KJ = record.Kj
 	}
-	if fr.Grams != 0 {
-		entry.Grams = fr.Grams
+	if record.Grams != 0 {
+		entry.Grams = record.Grams
 	}
-	if fr.ML != 0 {
-		entry.ML = fr.ML
+	if record.Ml != 0 {
+		entry.ML = record.Ml
 	}
 
 	return entry
