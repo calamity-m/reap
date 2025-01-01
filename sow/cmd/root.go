@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/calamity-m/reap/pkg/logging"
-	"github.com/calamity-m/reap/services/sow/config"
-	"github.com/calamity-m/reap/services/sow/internal/server"
+	"github.com/calamity-m/reap/sow/internal/config"
+	"github.com/calamity-m/reap/sow/internal/server"
 	"github.com/spf13/cobra"
 )
 

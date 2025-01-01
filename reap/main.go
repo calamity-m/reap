@@ -11,7 +11,7 @@ import (
 
 	"github.com/calamity-m/reap/pkg/clients"
 	"github.com/calamity-m/reap/pkg/logging"
-	"github.com/calamity-m/reap/services/reap/internal/server"
+	"github.com/calamity-m/reap/reap/internal/server"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

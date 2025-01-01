@@ -8,7 +8,7 @@ import (
 
 	"github.com/calamity-m/reap/pkg/errs"
 	"github.com/calamity-m/reap/proto/sow/v1"
-	"github.com/calamity-m/reap/services/sow/internal/persistence"
+	"github.com/calamity-m/reap/sow/internal/persistence"
 	"github.com/google/uuid"
 )
 
