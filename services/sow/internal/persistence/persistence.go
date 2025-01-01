@@ -29,9 +29,9 @@ type FoodStore interface {
 	GetFood(uuid uuid.UUID) (FoodRecordEntry, error)
 	// Provided FoodRecordEntry is treated as a filter, allowing
 	// the caller to retrieve multiple food records at will.
-	GetFoods(filter FoodRecordEntry) ([]FoodRecordEntry, error)
+	GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry, error)
 	// Update the record in place
-	UpdateFood(uuid uuid.UUID) error
+	UpdateFood(record FoodRecordEntry) error
 	// Delete matching record
 	DeleteFood(uuid uuid.UUID) error
 }
@@ -68,12 +68,12 @@ func (s *MemoryFoodStore) GetFood(uuid uuid.UUID) (FoodRecordEntry, error) {
 
 // Provided FoodRecordEntry is treated as a filter, allowing
 // the caller to retrieve multiple food records at will.
-func (s *MemoryFoodStore) GetFoods(filter FoodRecordEntry) ([]FoodRecordEntry, error) {
+func (s *MemoryFoodStore) GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry, error) {
 	panic("not implemented") // TODO: Implement
 }
 
 // Update the record in place
-func (s *MemoryFoodStore) UpdateFood(uuid uuid.UUID) error {
+func (s *MemoryFoodStore) UpdateFood(record FoodRecordEntry) error {
 	panic("not implemented") // TODO: Implement
 }
 
