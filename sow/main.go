@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/calamity-m/reap/services/sow/cmd"
+	"github.com/calamity-m/reap/sow/cmd"
 )
 
 func main() {

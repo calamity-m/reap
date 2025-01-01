@@ -13,9 +13,9 @@ import (
 
 	"github.com/calamity-m/reap/pkg/errs"
 	"github.com/calamity-m/reap/proto/sow/v1"
-	"github.com/calamity-m/reap/services/sow/config"
-	"github.com/calamity-m/reap/services/sow/internal/persistence"
-	"github.com/calamity-m/reap/services/sow/internal/service"
+	"github.com/calamity-m/reap/sow/config"
+	"github.com/calamity-m/reap/sow/internal/persistence"
+	"github.com/calamity-m/reap/sow/internal/service"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"

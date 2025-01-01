@@ -1,5 +1,5 @@
 sow-build:
-	go build -o builds/ ./services/sow/
+	go build -o builds/ ./sow/
 
 sow-proto:
 	protoc --go_out=. --go_opt=paths=source_relative     --go-grpc_out=. --go-grpc_opt=paths=source_relative     proto/sow/v1/sow.proto
@@ -8,19 +8,19 @@ sow-start:
 	./builds/sow
 
 sow-run:
-	go run ./services/sow/
+	go run ./sow/
 
 sow: sow-build sow-start
 
 
 reap-build:
-	go build -o builds/ ./services/reap/
+	go build -o builds/ ./reap/
 
 reap-start:
 	./builds/reap
 
 reap-run:
-	go run ./services/reap/
+	go run ./reap/
 
 reap: reap-build reap-start
 

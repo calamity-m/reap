@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/calamity-m/reap/proto/sow/v1"
-	"github.com/calamity-m/reap/services/reap/internal/handlers"
+	"github.com/calamity-m/reap/reap/internal/handlers"
 )
 
 type ReaperServer struct {
