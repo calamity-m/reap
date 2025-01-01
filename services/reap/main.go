@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/calamity-m/reap/pkg/clients"
 	"github.com/calamity-m/reap/pkg/logging"
 	"github.com/calamity-m/reap/services/reap/internal/server"
 	"google.golang.org/grpc"
@@ -57,7 +58,7 @@ func main() {
 	}))
 
 	// Create GRPC clients
-	sowClient, sowConn, err := createSowClient("localhost:9099", []grpc.DialOption{
+	sowClient, sowConn, err := clients.CreateSowClient("localhost:9099", []grpc.DialOption{
 		// For now just use insecure
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	})

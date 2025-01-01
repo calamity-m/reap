@@ -1,4 +1,4 @@
-package main
+package clients
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func createSowClient(addr string, opts []grpc.DialOption) (sow.FoodRecordingServiceClient, *grpc.ClientConn, error) {
+func CreateSowClient(addr string, opts []grpc.DialOption) (sow.FoodRecordingServiceClient, *grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(addr, opts...)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to dial: %v", err)
