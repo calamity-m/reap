@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 
+	"github.com/calamity-m/reap/pkg/errs"
 	"github.com/calamity-m/reap/proto/sow/v1"
 	"github.com/calamity-m/reap/services/sow/internal/persistence"
 	"github.com/google/uuid"
@@ -14,7 +17,7 @@ type FoodRecordService struct {
 	log   *slog.Logger
 }
 
-func (s *FoodRecordService) Get(ctx context.Context, uuid uuid.UUID) (*sow.Record, error) {
+func (s *FoodRecordService) Get(ctx context.Context, id uuid.UUID) (*sow.Record, error) {
 
 	dummy := persistence.FoodRecordEntry{}
 
@@ -23,22 +26,27 @@ func (s *FoodRecordService) Get(ctx context.Context, uuid uuid.UUID) (*sow.Recor
 	return record, nil
 }
 
-func (s *FoodRecordService) GetFiltered(ctx context.Context, userId uuid.UUID, record *sow.Record) ([]*sow.Record, error) {
+func (s *FoodRecordService) GetFiltered(ctx context.Context, record *sow.Record) ([]*sow.Record, error) {
 
 	return nil, nil
 }
 
-func (s *FoodRecordService) Create(ctx context.Context, userId uuid.UUID, record *sow.Record) (*sow.Record, error) {
+func (s *FoodRecordService) Create(ctx context.Context, record *sow.Record) (*sow.Record, error) {
 
 	return &sow.Record{}, nil
 }
 
-func (s *FoodRecordService) Delete(ctx context.Context, userId uuid.UUID, uuid uuid.UUID) error {
+func (s *FoodRecordService) Delete(ctx context.Context, id uuid.UUID) error {
 
 	return nil
 }
 
-func (s *FoodRecordService) Update(ctx context.Context, userId, uuid uuid.UUID, record *sow.Record) error {
+func (s *FoodRecordService) Update(ctx context.Context, id uuid.UUID, record *sow.Record) error {
+	userId, err := uuid.Parse(record.GetUserId())
+	if err != nil {
+		return errors.Join(fmt.Errorf("user id is not valid"), errs.ErrInvalidRequest)
+	}
+
 	entry := createEntry(userId, record)
 
 	s.log.DebugContext(ctx, "wip", slog.Any("entry", entry))

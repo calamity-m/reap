@@ -72,13 +72,17 @@ func (s *SowGRPCServer) GetRecords(wanted *sow.GetRecordsRequest, stream grpc.Se
 		return errors.Join(status.Error(codes.InvalidArgument, "wanted cannot be nil"), errs.ErrBadRequest)
 	}
 
+	if wanted.GetWanted() == nil {
+		return errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
+	}
+
 	userId, err := uuid.Parse(wanted.GetWanted().GetUserId())
 	if err != nil {
 		return errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
 	}
 
 	// Try and get any matching records
-	records, err := s.service.GetFiltered(stream.Context(), userId, &sow.Record{})
+	records, err := s.service.GetFiltered(stream.Context(), wanted.GetWanted())
 	if err != nil {
 		if errors.Is(err, errs.ErrInvalidRequest) {
 			s.log.ErrorContext(stream.Context(), "invalid request occured", slog.Any("err", err))
@@ -103,19 +107,96 @@ func (s *SowGRPCServer) GetRecords(wanted *sow.GetRecordsRequest, stream grpc.Se
 func (s *SowGRPCServer) CreateRecord(ctx context.Context, req *sow.CreateRecordRequest) (*sow.CreateRecordResponse, error) {
 	s.log.DebugContext(ctx, "entered create record")
 
-	return nil, status.Error(codes.Unimplemented, "not implemented")
+	if req == nil {
+		return nil, errors.Join(status.Error(codes.InvalidArgument, "input cannot be nil"), errs.ErrBadRequest)
+	}
+
+	if req.GetRecord() == nil {
+		return nil, errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
+	}
+
+	userId, err := uuid.Parse(req.GetRecord().GetUserId())
+	if err != nil {
+		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
+	}
+
+	// Try and create record
+	created, err := s.service.Create(ctx, req.GetRecord())
+	if err != nil {
+		if errors.Is(err, errs.ErrInvalidRequest) {
+			s.log.ErrorContext(ctx, "invalid request occured", slog.Any("err", err))
+			return nil, errors.Join(status.Error(codes.InvalidArgument, "invalid request"), err)
+		}
+
+		s.log.ErrorContext(ctx, "some error occured while creating record", slog.Any("err", err))
+		return nil, errors.Join(status.Error(codes.Internal, "internal server error"), err)
+	}
+
+	return &sow.CreateRecordResponse{Record: created}, nil
 }
 
 func (s *SowGRPCServer) UpdateRecord(ctx context.Context, req *sow.UpdateRecordRequest) (*sow.UpdateRecordResponse, error) {
 	s.log.DebugContext(ctx, "entered update record")
 
-	return nil, status.Error(codes.Unimplemented, "not implemented")
+	if req == nil {
+		return nil, errors.Join(status.Error(codes.InvalidArgument, "input cannot be nil"), errs.ErrBadRequest)
+	}
+
+	if req.GetRecord() == nil {
+		return nil, errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
+	}
+
+	userId, err := uuid.Parse(req.GetRecord().GetUserId())
+	if err != nil {
+		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
+	}
+
+	id, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
+	}
+
+	// Attempt to update record
+	err = s.service.Update(ctx, id, req.GetRecord())
+	if err != nil {
+		if errors.Is(err, errs.ErrInvalidRequest) {
+			s.log.ErrorContext(ctx, "invalid request occured", slog.Any("err", err))
+			return nil, errors.Join(status.Error(codes.InvalidArgument, "invalid request"), err)
+		}
+
+		s.log.ErrorContext(ctx, "some error occured while creating record", slog.Any("err", err))
+		return nil, errors.Join(status.Error(codes.Internal, "internal server error"), err)
+	}
+
+	return &sow.UpdateRecordResponse{Record: req.GetRecord()}, nil
 }
 
 func (s *SowGRPCServer) DeleteRecord(ctx context.Context, req *sow.DeleteRecordRequest) (*sow.DeleteRecordResponse, error) {
 	s.log.DebugContext(ctx, "entered delete record")
 
-	return nil, status.Error(codes.Unimplemented, "not implemented")
+	if req == nil {
+		return nil, errors.Join(status.Error(codes.InvalidArgument, "input cannot be nil"), errs.ErrBadRequest)
+	}
+
+	id, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", id), errs.ErrBadRequest)
+	}
+
+	// Try deleting record
+	err = s.service.Delete(ctx, id)
+
+	if err != nil {
+		if errors.Is(err, errs.ErrInvalidRequest) {
+			s.log.ErrorContext(ctx, "invalid request occured", slog.Any("err", err))
+			return nil, errors.Join(status.Error(codes.InvalidArgument, "invalid request"), err)
+		}
+
+		s.log.ErrorContext(ctx, "some error occured while creating record", slog.Any("err", err))
+		return nil, errors.Join(status.Error(codes.Internal, "internal server error"), err)
+	}
+
+	return &sow.DeleteRecordResponse{Id: req.GetId()}, nil
 }
 
 func (s *SowGRPCServer) Run() error {
