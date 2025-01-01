@@ -1,6 +1,8 @@
 package persistence
 
 import (
+	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -35,12 +37,26 @@ type FoodStore interface {
 }
 
 type MemoryFoodStore struct {
-	entries map[string]FoodRecordEntry
+	mux     sync.Mutex
+	tail    int
+	entries map[int]FoodRecordEntry
+	log     *slog.Logger
 }
 
 // Create a food record entry
 func (s *MemoryFoodStore) CreateFood(record FoodRecordEntry) error {
-	panic("not implemented") // TODO: Implement
+	s.mux.Lock()
+	defer s.mux.Unlock()
+
+	s.entries[s.tail] = record
+	s.tail += 1
+
+	if s.log != nil {
+		// Safety debug logging :)
+		s.log.Debug("updated in memory store with a creation", slog.Int("tail", s.tail), slog.Any("entries", s.entries))
+	}
+
+	return nil
 }
 
 // Retrieve a single food record based on the
