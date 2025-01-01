@@ -164,7 +164,6 @@ func NewSowServer(cfg *config.Config, logger *slog.Logger) (*SowGRPCServer, erro
 	}
 
 	store := persistence.NewMemoryFoodStore()
-
 	foodService, err := service.NewFoodRecorderService(logger, store)
 
 	if err != nil {

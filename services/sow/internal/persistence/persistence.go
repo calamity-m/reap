@@ -20,7 +20,7 @@ type FoodRecordEntry struct {
 
 type FoodStore interface {
 	// Create a food record entry
-	CreateFood(FoodRecordEntry) error
+	CreateFood(record FoodRecordEntry) error
 	// Retrieve a single food record based on the
 	// record's uuid. Internal DB primary key is ignored
 	// by this call.
@@ -39,7 +39,7 @@ type MemoryFoodStore struct {
 }
 
 // Create a food record entry
-func (s *MemoryFoodStore) CreateFood(_ FoodRecordEntry) error {
+func (s *MemoryFoodStore) CreateFood(record FoodRecordEntry) error {
 	panic("not implemented") // TODO: Implement
 }
 
