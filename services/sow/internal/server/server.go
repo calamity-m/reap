@@ -13,6 +13,7 @@ import (
 
 	"github.com/calamity-m/reap/pkg/errs"
 	"github.com/calamity-m/reap/proto/sow/v1"
+	"github.com/calamity-m/reap/services/sow/config"
 	"github.com/calamity-m/reap/services/sow/internal/persistence"
 	"github.com/calamity-m/reap/services/sow/internal/service"
 	"github.com/google/uuid"
@@ -157,8 +158,10 @@ func (s *SowGRPCServer) Run() error {
 	return <-exit
 }
 
-func NewSowServer(addr string, logger *slog.Logger) (*SowGRPCServer, error) {
-	// This needs configuration to be added, for picking the store
+func NewSowServer(cfg *config.Config, logger *slog.Logger) (*SowGRPCServer, error) {
+	if cfg == nil || logger == nil {
+		return nil, fmt.Errorf("nil input not allowed")
+	}
 
 	store := persistence.NewMemoryFoodStore()
 
@@ -172,7 +175,7 @@ func NewSowServer(addr string, logger *slog.Logger) (*SowGRPCServer, error) {
 	server := &SowGRPCServer{
 		log:     logger,
 		service: foodService,
-		addr:    addr,
+		addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 	}
 
 	return server, nil
