@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/calamity-m/reap/pkg/errs"
@@ -12,7 +11,7 @@ import (
 
 func MapEntryToRecord(entry persistence.FoodRecordEntry) *sow.Record {
 	record := &sow.Record{
-		Id:          entry.UserId.String(),
+		Id:          entry.Id.String(),
 		UserId:      entry.UserId.String(),
 		Name:        entry.Name,
 		Description: entry.Description,
@@ -30,17 +29,41 @@ func MapEntryToRecord(entry persistence.FoodRecordEntry) *sow.Record {
 func MapRecordToEntry(record *sow.Record) (persistence.FoodRecordEntry, error) {
 	id, err := uuid.Parse(record.GetId())
 	if err != nil {
-		return persistence.FoodRecordEntry{}, errors.Join(fmt.Errorf("id is not valid"), errs.ErrInvalidRequest)
+		return persistence.FoodRecordEntry{}, fmt.Errorf("id is not a valid uuid: %w", errs.ErrInvalidRequest)
 	}
 
 	userId, err := uuid.Parse(record.GetUserId())
 	if err != nil {
-		return persistence.FoodRecordEntry{}, errors.Join(fmt.Errorf("user id is not valid"), errs.ErrInvalidRequest)
+		return persistence.FoodRecordEntry{}, fmt.Errorf("userid is not a valid uuid: %w", errs.ErrInvalidRequest)
 	}
 
 	entry := persistence.FoodRecordEntry{
 		Id:          id,
 		UserId:      userId,
+		Name:        record.Name,
+		Description: record.Description,
+		KJ:          calsToKJ(record.Calories),
+		ML:          flOzToML(record.FlOz),
+		Grams:       ozToGrams(record.Oz),
+		Created:     record.Time.AsTime(),
+	}
+
+	// Yucky imperial system
+	if record.Kj != 0 {
+		entry.KJ = record.Kj
+	}
+	if record.Grams != 0 {
+		entry.Grams = record.Grams
+	}
+	if record.Ml != 0 {
+		entry.ML = record.Ml
+	}
+
+	return entry, nil
+}
+
+func MapRecordToEntryWithoutUuids(record *sow.Record) (persistence.FoodRecordEntry, error) {
+	entry := persistence.FoodRecordEntry{
 		Name:        record.Name,
 		Description: record.Description,
 		KJ:          calsToKJ(record.Calories),

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
@@ -10,8 +9,6 @@ import (
 	"github.com/calamity-m/reap/proto/sow/v1"
 	"github.com/calamity-m/reap/sow/internal/persistence"
 	"github.com/google/uuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type FoodRecordService struct {
@@ -37,24 +34,38 @@ func (s *FoodRecordService) GetFiltered(ctx context.Context, record *sow.Record)
 }
 
 func (s *FoodRecordService) Create(ctx context.Context, record *sow.Record) (*sow.Record, error) {
+	// If we have an ID set on our create, exit early as that is an invalid attempt at creation
+	if record.Id != "" {
+		return nil, fmt.Errorf("id cannot be set: %w", errs.ErrInvalidRequest)
+	}
+
+	// We need to have some form of description, no matter what it is.
+	if record.Description == "" {
+		return nil, fmt.Errorf("description must be set: %w", errs.ErrInvalidRequest)
+	}
+
 	// Ensure we have a valid user id before updating
 	userId, err := uuid.Parse(record.GetUserId())
 	if err != nil {
-		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
+		return nil, fmt.Errorf("userid %s is not a valid uuid: %w", record.Id, errs.ErrInvalidRequest)
 	}
 
-	// Perform mapping of the record for storage layer
-	entry, err := MapRecordToEntry(record)
+	// Perform mapping of the record for storage layer, ignoring any of the uuids we have set
+	// on the record.
+	entry, err := MapRecordToEntryWithoutUuids(record)
 	if err != nil {
 		return nil, err
 	}
 
-	// Generate a UUID id if not provided
+	// Set uuids ourselveves
+	entry.UserId = userId
+
+	// Generate a UUID id
 	if entry.Id == uuid.Nil {
 		id, err := uuid.NewV7()
 		if err != nil {
 			s.log.ErrorContext(ctx, "failed to generate uuid for create", slog.Any("err", err))
-			return nil, errors.Join(fmt.Errorf("failed to generate record id"), errs.ErrInternal)
+			return nil, fmt.Errorf("failed to generate id: %w", errs.ErrInternal)
 		}
 
 		entry.Id = id
