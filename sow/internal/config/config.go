@@ -48,6 +48,9 @@ func NewConfig(debug bool) (*Config, error) {
 	vip.SetDefault("tls_certificate", "cert.crt")
 	vip.SetDefault("tls_certificate_key", "cert.key")
 	vip.SetDefault("db_in_memory", true)
+	vip.BindEnv("db_host")
+	vip.BindEnv("db_user")
+	vip.BindEnv("db_password")
 
 	// Magic to unamrshal viper into the config sturct. The decode hook is used to map things like the logging level
 	// into the slog logging level type.
