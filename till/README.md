@@ -1,3 +1,3 @@
 # Till
 
-Till is a service for infinite lists
+Till is a service for activity recording
