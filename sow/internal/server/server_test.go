@@ -7,32 +7,6 @@ import (
 	"github.com/calamity-m/reap/sow/internal/config"
 )
 
-/*
-
-func NewSowServer(cfg *config.Config, logger *slog.Logger) (*SowGRPCServer, error) {
-	if cfg == nil || logger == nil {
-		return nil, fmt.Errorf("nil input not allowed")
-	}
-
-	store := persistence.NewMemoryFoodStore()
-	foodService, err := service.NewFoodRecorderService(logger, store)
-
-	if err != nil {
-		logger.Error("failed to create sow food service and store")
-		return nil, errors.New("failed to create server")
-	}
-
-	server := &SowGRPCServer{
-		log:     logger,
-		service: foodService,
-		addr:    fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
-	}
-
-	return server, nil
-}
-
-*/
-
 func TestNewSowServer(t *testing.T) {
 	t.Run("cfg cannot be nil", func(t *testing.T) {
 		_, err := NewSowServer(nil, slog.Default())
