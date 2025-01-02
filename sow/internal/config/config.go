@@ -38,7 +38,7 @@ func NewConfig(debug bool) (*Config, error) {
 
 	// Establish sane defaults before overriding
 	vip.SetDefault("environment", "dev")
-	vip.SetDefault("log_level", slog.LevelInfo)
+	vip.SetDefault("log_level", slog.LevelDebug)
 	vip.SetDefault("log_structured", true)
 	vip.SetDefault("log_add_source", true)
 	vip.SetDefault("log_request_id", true)
