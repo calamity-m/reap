@@ -78,27 +78,34 @@ func (s *MemoryFoodStore) GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry
 	entries := make([]FoodRecordEntry, 0, 1)
 
 	for _, val := range s.entries {
+		// Skip non matching user ids
+		if val.UserId != filter.UserId {
+			continue
+		}
+
+		// Check KJ/Grams/ML only if they're non zero
+		if filter.KJ != 0 && filter.KJ == val.KJ {
+			entries = append(entries, val)
+			continue
+		}
+
+		if filter.Grams != 0 && filter.Grams == val.Grams {
+			entries = append(entries, val)
+			continue
+		}
+
+		if filter.ML != 0 && filter.Grams == val.Grams {
+			entries = append(entries, val)
+			continue
+		}
+
+		// Always check description, since an empty description is to get any
 		if strings.Contains(val.Description, filter.Description) {
 			entries = append(entries, val)
 			continue
 		}
-		if strings.Contains(val.Name, filter.Name) {
-			entries = append(entries, val)
-			continue
-		}
-		if val.UserId == filter.Id {
-			entries = append(entries, val)
-			continue
-		}
-		if val.KJ == filter.KJ {
-			entries = append(entries, val)
-			continue
-		}
-		if val.Grams == filter.Grams {
-			entries = append(entries, val)
-			continue
-		}
-		if val.ML == filter.ML {
+
+		if filter.Name != "" && strings.Contains(val.Name, filter.Name) {
 			entries = append(entries, val)
 			continue
 		}

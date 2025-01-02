@@ -59,7 +59,7 @@ func (s *FoodRecordService) GetFiltered(ctx context.Context, record *sow.Record)
 	}
 
 	// Map the found records into our sow domain struct
-	records := make([]*sow.Record, len(found))
+	records := make([]*sow.Record, 0, len(found))
 	for _, entry := range found {
 		records = append(records, MapEntryToRecord(entry))
 	}
