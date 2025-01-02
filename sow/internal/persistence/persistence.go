@@ -80,21 +80,27 @@ func (s *MemoryFoodStore) GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry
 	for _, val := range s.entries {
 		if strings.Contains(val.Description, filter.Description) {
 			entries = append(entries, val)
+			continue
 		}
 		if strings.Contains(val.Name, filter.Name) {
 			entries = append(entries, val)
+			continue
 		}
 		if val.UserId == filter.Id {
 			entries = append(entries, val)
+			continue
 		}
 		if val.KJ == filter.KJ {
 			entries = append(entries, val)
+			continue
 		}
 		if val.Grams == filter.Grams {
 			entries = append(entries, val)
+			continue
 		}
 		if val.ML == filter.ML {
 			entries = append(entries, val)
+			continue
 		}
 	}
 
