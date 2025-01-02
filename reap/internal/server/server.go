@@ -17,7 +17,7 @@ type ReaperServer struct {
 	shutdownGrace time.Duration
 }
 
-func NewReaperServer(log *slog.Logger, address string, sowClient sow.FoodRecordingServiceClient) (*ReaperServer, error) {
+func NewReaperServer(log *slog.Logger, address string, sowClient sow.FoodRecordingClient) (*ReaperServer, error) {
 	srv := &ReaperServer{
 		srv: http.Server{
 			Addr:    address,

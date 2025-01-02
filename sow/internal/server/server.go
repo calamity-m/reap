@@ -34,7 +34,7 @@ type SowGRPCServer struct {
 	// Address to listen to grpc clients on
 	addr string
 	// Required to match the GRPC service interface
-	sow.UnimplementedFoodRecordingServiceServer
+	sow.UnimplementedFoodRecordingServer
 }
 
 func (s *SowGRPCServer) GetRecord(ctx context.Context, req *sow.GetRecordRequest) (*sow.GetRecordResponse, error) {
@@ -64,25 +64,25 @@ func (s *SowGRPCServer) GetRecord(ctx context.Context, req *sow.GetRecordRequest
 	return &sow.GetRecordResponse{Record: record}, nil
 }
 
-func (s *SowGRPCServer) GetRecords(wanted *sow.GetRecordsRequest, stream grpc.ServerStreamingServer[sow.GetRecordsResponse]) error {
+func (s *SowGRPCServer) GetRecords(filter *sow.GetRecordsRequest, stream grpc.ServerStreamingServer[sow.GetRecordsResponse]) error {
 	s.log.DebugContext(stream.Context(), "entered get records")
 
 	// Verify our provided parameters
-	if wanted == nil {
+	if filter == nil {
 		return errors.Join(status.Error(codes.InvalidArgument, "wanted cannot be nil"), errs.ErrBadRequest)
 	}
 
-	if wanted.GetWanted() == nil {
+	if filter.GetFilter() == nil {
 		return errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
 	}
 
-	userId, err := uuid.Parse(wanted.GetWanted().GetUserId())
+	userId, err := uuid.Parse(filter.GetFilter().GetUserId())
 	if err != nil {
 		return errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
 	}
 
 	// Try and get any matching records
-	records, err := s.service.GetFiltered(stream.Context(), wanted.GetWanted())
+	records, err := s.service.GetFiltered(stream.Context(), filter.GetFilter())
 	if err != nil {
 		if errors.Is(err, errs.ErrInvalidRequest) {
 			s.log.ErrorContext(stream.Context(), "invalid request occured", slog.Any("err", err))
@@ -151,7 +151,7 @@ func (s *SowGRPCServer) UpdateRecord(ctx context.Context, req *sow.UpdateRecordR
 		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
 	}
 
-	id, err := uuid.Parse(req.GetId())
+	id, err := uuid.Parse(req.GetRecord().GetId())
 	if err != nil {
 		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
 	}
@@ -207,7 +207,7 @@ func (s *SowGRPCServer) Run() error {
 	grpcServer := grpc.NewServer(s.grpcOpts...)
 
 	// register ourselves
-	sow.RegisterFoodRecordingServiceServer(grpcServer, s)
+	sow.RegisterFoodRecordingServer(grpcServer, s)
 
 	// enable reflection. Should be configurable later
 	reflection.Register(grpcServer)

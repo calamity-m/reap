@@ -19,19 +19,19 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FoodRecordingService_GetRecord_FullMethodName    = "/sow.v1.FoodRecordingService/GetRecord"
-	FoodRecordingService_GetRecords_FullMethodName   = "/sow.v1.FoodRecordingService/GetRecords"
-	FoodRecordingService_CreateRecord_FullMethodName = "/sow.v1.FoodRecordingService/CreateRecord"
-	FoodRecordingService_UpdateRecord_FullMethodName = "/sow.v1.FoodRecordingService/UpdateRecord"
-	FoodRecordingService_DeleteRecord_FullMethodName = "/sow.v1.FoodRecordingService/DeleteRecord"
+	FoodRecording_GetRecord_FullMethodName    = "/sow.v1.FoodRecording/GetRecord"
+	FoodRecording_GetRecords_FullMethodName   = "/sow.v1.FoodRecording/GetRecords"
+	FoodRecording_CreateRecord_FullMethodName = "/sow.v1.FoodRecording/CreateRecord"
+	FoodRecording_UpdateRecord_FullMethodName = "/sow.v1.FoodRecording/UpdateRecord"
+	FoodRecording_DeleteRecord_FullMethodName = "/sow.v1.FoodRecording/DeleteRecord"
 )
 
-// FoodRecordingServiceClient is the client API for FoodRecordingService service.
+// FoodRecordingClient is the client API for FoodRecording service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // Service to interact with food record entries
-type FoodRecordingServiceClient interface {
+type FoodRecordingClient interface {
 	// Simple RPC
 	//
 	// Retrieves a record through a defined id.
@@ -54,27 +54,27 @@ type FoodRecordingServiceClient interface {
 	DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error)
 }
 
-type foodRecordingServiceClient struct {
+type foodRecordingClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewFoodRecordingServiceClient(cc grpc.ClientConnInterface) FoodRecordingServiceClient {
-	return &foodRecordingServiceClient{cc}
+func NewFoodRecordingClient(cc grpc.ClientConnInterface) FoodRecordingClient {
+	return &foodRecordingClient{cc}
 }
 
-func (c *foodRecordingServiceClient) GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
+func (c *foodRecordingClient) GetRecord(ctx context.Context, in *GetRecordRequest, opts ...grpc.CallOption) (*GetRecordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetRecordResponse)
-	err := c.cc.Invoke(ctx, FoodRecordingService_GetRecord_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FoodRecording_GetRecord_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *foodRecordingServiceClient) GetRecords(ctx context.Context, in *GetRecordsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetRecordsResponse], error) {
+func (c *foodRecordingClient) GetRecords(ctx context.Context, in *GetRecordsRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[GetRecordsResponse], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	stream, err := c.cc.NewStream(ctx, &FoodRecordingService_ServiceDesc.Streams[0], FoodRecordingService_GetRecords_FullMethodName, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &FoodRecording_ServiceDesc.Streams[0], FoodRecording_GetRecords_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,44 +89,44 @@ func (c *foodRecordingServiceClient) GetRecords(ctx context.Context, in *GetReco
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type FoodRecordingService_GetRecordsClient = grpc.ServerStreamingClient[GetRecordsResponse]
+type FoodRecording_GetRecordsClient = grpc.ServerStreamingClient[GetRecordsResponse]
 
-func (c *foodRecordingServiceClient) CreateRecord(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
+func (c *foodRecordingClient) CreateRecord(ctx context.Context, in *CreateRecordRequest, opts ...grpc.CallOption) (*CreateRecordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(CreateRecordResponse)
-	err := c.cc.Invoke(ctx, FoodRecordingService_CreateRecord_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FoodRecording_CreateRecord_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *foodRecordingServiceClient) UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
+func (c *foodRecordingClient) UpdateRecord(ctx context.Context, in *UpdateRecordRequest, opts ...grpc.CallOption) (*UpdateRecordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(UpdateRecordResponse)
-	err := c.cc.Invoke(ctx, FoodRecordingService_UpdateRecord_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FoodRecording_UpdateRecord_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *foodRecordingServiceClient) DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
+func (c *foodRecordingClient) DeleteRecord(ctx context.Context, in *DeleteRecordRequest, opts ...grpc.CallOption) (*DeleteRecordResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(DeleteRecordResponse)
-	err := c.cc.Invoke(ctx, FoodRecordingService_DeleteRecord_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, FoodRecording_DeleteRecord_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// FoodRecordingServiceServer is the server API for FoodRecordingService service.
-// All implementations must embed UnimplementedFoodRecordingServiceServer
+// FoodRecordingServer is the server API for FoodRecording service.
+// All implementations must embed UnimplementedFoodRecordingServer
 // for forward compatibility.
 //
 // Service to interact with food record entries
-type FoodRecordingServiceServer interface {
+type FoodRecordingServer interface {
 	// Simple RPC
 	//
 	// Retrieves a record through a defined id.
@@ -147,163 +147,163 @@ type FoodRecordingServiceServer interface {
 	// Simple RPC
 	// Delete some record matching the provided id
 	DeleteRecord(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error)
-	mustEmbedUnimplementedFoodRecordingServiceServer()
+	mustEmbedUnimplementedFoodRecordingServer()
 }
 
-// UnimplementedFoodRecordingServiceServer must be embedded to have
+// UnimplementedFoodRecordingServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedFoodRecordingServiceServer struct{}
+type UnimplementedFoodRecordingServer struct{}
 
-func (UnimplementedFoodRecordingServiceServer) GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
+func (UnimplementedFoodRecordingServer) GetRecord(context.Context, *GetRecordRequest) (*GetRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRecord not implemented")
 }
-func (UnimplementedFoodRecordingServiceServer) GetRecords(*GetRecordsRequest, grpc.ServerStreamingServer[GetRecordsResponse]) error {
+func (UnimplementedFoodRecordingServer) GetRecords(*GetRecordsRequest, grpc.ServerStreamingServer[GetRecordsResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method GetRecords not implemented")
 }
-func (UnimplementedFoodRecordingServiceServer) CreateRecord(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
+func (UnimplementedFoodRecordingServer) CreateRecord(context.Context, *CreateRecordRequest) (*CreateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRecord not implemented")
 }
-func (UnimplementedFoodRecordingServiceServer) UpdateRecord(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
+func (UnimplementedFoodRecordingServer) UpdateRecord(context.Context, *UpdateRecordRequest) (*UpdateRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRecord not implemented")
 }
-func (UnimplementedFoodRecordingServiceServer) DeleteRecord(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
+func (UnimplementedFoodRecordingServer) DeleteRecord(context.Context, *DeleteRecordRequest) (*DeleteRecordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteRecord not implemented")
 }
-func (UnimplementedFoodRecordingServiceServer) mustEmbedUnimplementedFoodRecordingServiceServer() {}
-func (UnimplementedFoodRecordingServiceServer) testEmbeddedByValue()                              {}
+func (UnimplementedFoodRecordingServer) mustEmbedUnimplementedFoodRecordingServer() {}
+func (UnimplementedFoodRecordingServer) testEmbeddedByValue()                       {}
 
-// UnsafeFoodRecordingServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to FoodRecordingServiceServer will
+// UnsafeFoodRecordingServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FoodRecordingServer will
 // result in compilation errors.
-type UnsafeFoodRecordingServiceServer interface {
-	mustEmbedUnimplementedFoodRecordingServiceServer()
+type UnsafeFoodRecordingServer interface {
+	mustEmbedUnimplementedFoodRecordingServer()
 }
 
-func RegisterFoodRecordingServiceServer(s grpc.ServiceRegistrar, srv FoodRecordingServiceServer) {
-	// If the following call pancis, it indicates UnimplementedFoodRecordingServiceServer was
+func RegisterFoodRecordingServer(s grpc.ServiceRegistrar, srv FoodRecordingServer) {
+	// If the following call pancis, it indicates UnimplementedFoodRecordingServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&FoodRecordingService_ServiceDesc, srv)
+	s.RegisterService(&FoodRecording_ServiceDesc, srv)
 }
 
-func _FoodRecordingService_GetRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FoodRecording_GetRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FoodRecordingServiceServer).GetRecord(ctx, in)
+		return srv.(FoodRecordingServer).GetRecord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FoodRecordingService_GetRecord_FullMethodName,
+		FullMethod: FoodRecording_GetRecord_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoodRecordingServiceServer).GetRecord(ctx, req.(*GetRecordRequest))
+		return srv.(FoodRecordingServer).GetRecord(ctx, req.(*GetRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FoodRecordingService_GetRecords_Handler(srv interface{}, stream grpc.ServerStream) error {
+func _FoodRecording_GetRecords_Handler(srv interface{}, stream grpc.ServerStream) error {
 	m := new(GetRecordsRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(FoodRecordingServiceServer).GetRecords(m, &grpc.GenericServerStream[GetRecordsRequest, GetRecordsResponse]{ServerStream: stream})
+	return srv.(FoodRecordingServer).GetRecords(m, &grpc.GenericServerStream[GetRecordsRequest, GetRecordsResponse]{ServerStream: stream})
 }
 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
-type FoodRecordingService_GetRecordsServer = grpc.ServerStreamingServer[GetRecordsResponse]
+type FoodRecording_GetRecordsServer = grpc.ServerStreamingServer[GetRecordsResponse]
 
-func _FoodRecordingService_CreateRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FoodRecording_CreateRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FoodRecordingServiceServer).CreateRecord(ctx, in)
+		return srv.(FoodRecordingServer).CreateRecord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FoodRecordingService_CreateRecord_FullMethodName,
+		FullMethod: FoodRecording_CreateRecord_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoodRecordingServiceServer).CreateRecord(ctx, req.(*CreateRecordRequest))
+		return srv.(FoodRecordingServer).CreateRecord(ctx, req.(*CreateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FoodRecordingService_UpdateRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FoodRecording_UpdateRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FoodRecordingServiceServer).UpdateRecord(ctx, in)
+		return srv.(FoodRecordingServer).UpdateRecord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FoodRecordingService_UpdateRecord_FullMethodName,
+		FullMethod: FoodRecording_UpdateRecord_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoodRecordingServiceServer).UpdateRecord(ctx, req.(*UpdateRecordRequest))
+		return srv.(FoodRecordingServer).UpdateRecord(ctx, req.(*UpdateRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _FoodRecordingService_DeleteRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _FoodRecording_DeleteRecord_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteRecordRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FoodRecordingServiceServer).DeleteRecord(ctx, in)
+		return srv.(FoodRecordingServer).DeleteRecord(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: FoodRecordingService_DeleteRecord_FullMethodName,
+		FullMethod: FoodRecording_DeleteRecord_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FoodRecordingServiceServer).DeleteRecord(ctx, req.(*DeleteRecordRequest))
+		return srv.(FoodRecordingServer).DeleteRecord(ctx, req.(*DeleteRecordRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// FoodRecordingService_ServiceDesc is the grpc.ServiceDesc for FoodRecordingService service.
+// FoodRecording_ServiceDesc is the grpc.ServiceDesc for FoodRecording service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var FoodRecordingService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "sow.v1.FoodRecordingService",
-	HandlerType: (*FoodRecordingServiceServer)(nil),
+var FoodRecording_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "sow.v1.FoodRecording",
+	HandlerType: (*FoodRecordingServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetRecord",
-			Handler:    _FoodRecordingService_GetRecord_Handler,
+			Handler:    _FoodRecording_GetRecord_Handler,
 		},
 		{
 			MethodName: "CreateRecord",
-			Handler:    _FoodRecordingService_CreateRecord_Handler,
+			Handler:    _FoodRecording_CreateRecord_Handler,
 		},
 		{
 			MethodName: "UpdateRecord",
-			Handler:    _FoodRecordingService_UpdateRecord_Handler,
+			Handler:    _FoodRecording_UpdateRecord_Handler,
 		},
 		{
 			MethodName: "DeleteRecord",
-			Handler:    _FoodRecordingService_DeleteRecord_Handler,
+			Handler:    _FoodRecording_DeleteRecord_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "GetRecords",
-			Handler:       _FoodRecordingService_GetRecords_Handler,
+			Handler:       _FoodRecording_GetRecords_Handler,
 			ServerStreams: true,
 		},
 	},

@@ -12,6 +12,8 @@ option go_package = "thub.com/calamity-m/reap/proto/sow/v1/sow";
 // The remaining options are all optional to maintain
 // ease of use by users.
 message Record {
+  // Unique Id of this record. Should be a UUID in string encoding.
+  string id = 1;
   // User that owns this record. Should be a UUID in string
   // encoding.
   string user_id = 2;
@@ -46,7 +48,7 @@ message Record {
 }
 
 // Service to interact with food record entries
-service FoodRecordingService {
+service FoodRecording {
   // Simple RPC
   //
   // Retrieves a record through a defined id.
@@ -88,7 +90,7 @@ message GetRecordsRequest {
   // Description and name are considered to be "contains" filters,
   // e.g. a "bob" value for the description will find all matching
   // records containing "bob" in the description
-  Record wanted = 1;
+  Record filter = 1;
 }
 
 message GetRecordsResponse {
@@ -97,10 +99,8 @@ message GetRecordsResponse {
 }
 
 message CreateRecordRequest {
-  // Id of the record to create, expected in uuid format
-  string id = 1;
   // Record that is meant to be created
-  Record record = 2;
+  Record record = 1;
 }
 
 message CreateRecordResponse {
@@ -109,11 +109,9 @@ message CreateRecordResponse {
 }
 
 message UpdateRecordRequest {
-  // Id of the record to update, expected in uuid format
-  string id = 1;
   // Record that will take place of the existing record.
   // Zero values will be ignored.
-  Record record = 2;
+  Record record = 1;
 }
 
 message UpdateRecordResponse {

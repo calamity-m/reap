@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func handleSowGet(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) func(w http.ResponseWriter, r *http.Request) {
+func handleSowGet(log *slog.Logger, sowClient sow.FoodRecordingClient) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -58,7 +58,7 @@ func handleSowGet(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) fu
 	}
 }
 
-func handleSowGetMany(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) func(w http.ResponseWriter, r *http.Request) {
+func handleSowGetMany(log *slog.Logger, sowClient sow.FoodRecordingClient) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -127,7 +127,7 @@ func handleSowGetMany(log *slog.Logger, sowClient sow.FoodRecordingServiceClient
 	}
 }
 
-func handleSowCreate(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) func(w http.ResponseWriter, r *http.Request) {
+func handleSowCreate(log *slog.Logger, sowClient sow.FoodRecordingClient) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -158,7 +158,7 @@ func handleSowCreate(log *slog.Logger, sowClient sow.FoodRecordingServiceClient)
 	}
 }
 
-func handleSowUpdate(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) func(w http.ResponseWriter, r *http.Request) {
+func handleSowUpdate(log *slog.Logger, sowClient sow.FoodRecordingClient) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -198,7 +198,7 @@ func handleSowUpdate(log *slog.Logger, sowClient sow.FoodRecordingServiceClient)
 	}
 }
 
-func handleSowDelete(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) func(w http.ResponseWriter, r *http.Request) {
+func handleSowDelete(log *slog.Logger, sowClient sow.FoodRecordingClient) func(w http.ResponseWriter, r *http.Request) {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 

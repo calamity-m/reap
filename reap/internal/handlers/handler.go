@@ -16,7 +16,7 @@ const (
 	SowCreatePath      = "POST /food/{userid}"
 )
 
-func NewReaperRouter(log *slog.Logger, sowClient sow.FoodRecordingServiceClient) http.Handler {
+func NewReaperRouter(log *slog.Logger, sowClient sow.FoodRecordingClient) http.Handler {
 	mux := http.NewServeMux()
 
 	// Provision handling of sow related routes
