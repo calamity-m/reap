@@ -127,5 +127,6 @@ func (s *MemoryFoodStore) DeleteFood(uuid uuid.UUID) error {
 }
 
 func NewMemoryFoodStore() *MemoryFoodStore {
-	return &MemoryFoodStore{}
+	entries := map[string]FoodRecordEntry{"01942487-8295-7800-95c1-44d5c0a67099": FoodRecordEntry{}}
+	return &MemoryFoodStore{entries: entries}
 }

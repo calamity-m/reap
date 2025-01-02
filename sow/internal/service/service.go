@@ -19,11 +19,15 @@ type FoodRecordService struct {
 
 func (s *FoodRecordService) Get(ctx context.Context, id uuid.UUID) (*sow.Record, error) {
 
-	dummy := persistence.FoodRecordEntry{}
+	entry, err := s.store.GetFood(id)
 
-	record := createRecord(dummy)
+	if err != nil {
+		return nil, err
+	}
 
-	return record, nil
+	found := MapEntryToRecord(entry)
+
+	return found, nil
 }
 
 func (s *FoodRecordService) GetFiltered(ctx context.Context, record *sow.Record) ([]*sow.Record, error) {
@@ -33,7 +37,37 @@ func (s *FoodRecordService) GetFiltered(ctx context.Context, record *sow.Record)
 
 func (s *FoodRecordService) Create(ctx context.Context, record *sow.Record) (*sow.Record, error) {
 
-	return &sow.Record{}, nil
+	// Perform mapping of the record for storage layer
+	entry, err := MapRecordToEntry(record)
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate a UUID id if not provided
+	if entry.Uuid == uuid.Nil {
+		id, err := uuid.NewV7()
+		if err != nil {
+			s.log.ErrorContext(ctx, "failed to generate uuid for create", slog.Any("err", err))
+			return nil, errors.Join(fmt.Errorf("failed to generate record id"), errs.ErrInternal)
+		}
+
+		entry.Uuid = id
+	}
+
+	// Attempt to create it
+	err = s.store.CreateFood(entry)
+	if err != nil {
+		return nil, err
+	}
+
+	// Grab the newly created entry
+	created, err := s.Get(ctx, entry.Uuid)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed grab record after it was created: %w", errs.ErrInternal)
+	}
+
+	return created, nil
 }
 
 func (s *FoodRecordService) Delete(ctx context.Context, id uuid.UUID) error {
@@ -42,12 +76,11 @@ func (s *FoodRecordService) Delete(ctx context.Context, id uuid.UUID) error {
 }
 
 func (s *FoodRecordService) Update(ctx context.Context, id uuid.UUID, record *sow.Record) error {
-	userId, err := uuid.Parse(record.GetUserId())
-	if err != nil {
-		return errors.Join(fmt.Errorf("user id is not valid"), errs.ErrInvalidRequest)
-	}
+	entry, err := MapRecordToEntry(record)
 
-	entry := createEntry(userId, record)
+	if err != nil {
+		return err
+	}
 
 	s.log.DebugContext(ctx, "wip", slog.Any("entry", entry))
 
@@ -56,73 +89,4 @@ func (s *FoodRecordService) Update(ctx context.Context, id uuid.UUID, record *so
 
 func NewFoodRecorderService(logger *slog.Logger, store persistence.FoodStore) (*FoodRecordService, error) {
 	return &FoodRecordService{log: logger, store: store}, nil
-}
-
-func createRecord(entry persistence.FoodRecordEntry) *sow.Record {
-	record := &sow.Record{
-		UserId:      entry.UserId.String(),
-		Name:        entry.Name,
-		Description: entry.Description,
-		Kj:          entry.KJ,
-		Grams:       entry.Grams,
-		Ml:          entry.ML,
-		Calories:    kjToCals(entry.KJ),
-		Oz:          gramsToOz(entry.Grams),
-		FlOz:        mlToFLOz(entry.ML),
-	}
-
-	return record
-}
-
-func createEntry(userId uuid.UUID, record *sow.Record) persistence.FoodRecordEntry {
-
-	entry := persistence.FoodRecordEntry{
-		UserId:      userId,
-		Name:        record.Name,
-		Description: record.Description,
-		KJ:          calsToKJ(record.Calories),
-		ML:          flOzToML(record.FlOz),
-		Grams:       ozToGrams(record.Oz),
-		Created:     record.Time.AsTime(),
-	}
-
-	// Yucky imperial system. Premature optimization
-	// here isn't worth it, so just on every single
-	// create we'll blat over the imperial
-	// with metric if provided
-	if record.Kj != 0 {
-		entry.KJ = record.Kj
-	}
-	if record.Grams != 0 {
-		entry.Grams = record.Grams
-	}
-	if record.Ml != 0 {
-		entry.ML = record.Ml
-	}
-
-	return entry
-}
-
-func calsToKJ(cals float32) float32 {
-	return cals * 4.184
-}
-
-func ozToGrams(oz float32) float32 {
-	return oz * 28.35
-}
-
-func flOzToML(flOz float32) float32 {
-	return flOz * 29.574
-}
-
-func kjToCals(kj float32) float32 {
-	return kj / 4.184
-}
-
-func gramsToOz(grams float32) float32 {
-	return grams / 28.35
-}
-
-func mlToFLOz(ml float32) float32 {
-	return ml / 29.574
 }
