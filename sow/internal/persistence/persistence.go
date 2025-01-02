@@ -84,31 +84,27 @@ func (s *MemoryFoodStore) GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry
 		}
 
 		// Check KJ/Grams/ML only if they're non zero
-		if filter.KJ != 0 && filter.KJ == val.KJ {
-			entries = append(entries, val)
+		if filter.KJ != 0 && filter.KJ != val.KJ {
 			continue
 		}
 
-		if filter.Grams != 0 && filter.Grams == val.Grams {
-			entries = append(entries, val)
+		if filter.Grams != 0 && filter.Grams != val.Grams {
 			continue
 		}
 
-		if filter.ML != 0 && filter.Grams == val.Grams {
-			entries = append(entries, val)
+		if filter.ML != 0 && filter.Grams != val.Grams {
 			continue
 		}
 
-		// Always check description, since an empty description is to get any
-		if strings.Contains(val.Description, filter.Description) {
-			entries = append(entries, val)
+		if !strings.Contains(val.Name, filter.Name) {
 			continue
 		}
 
-		if filter.Name != "" && strings.Contains(val.Name, filter.Name) {
-			entries = append(entries, val)
+		if !strings.Contains(val.Description, filter.Description) {
 			continue
 		}
+
+		entries = append(entries, val)
 	}
 
 	return entries, nil
