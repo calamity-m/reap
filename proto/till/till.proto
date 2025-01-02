@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package till.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "thub.com/calamity-m/reap/proto/till/v1/till";
+
+enum Category {
+  CATEGORY_UNSPECIFIED = 0;
+  CATEGORY_ACTIVE = 1;
+  CATEGORY_CARDIO = 2;
+  CATEGORY_WEIGHTS = 3;
+}
