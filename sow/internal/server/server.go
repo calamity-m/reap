@@ -115,11 +115,6 @@ func (s *SowGRPCServer) CreateRecord(ctx context.Context, req *sow.CreateRecordR
 		return nil, errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
 	}
 
-	userId, err := uuid.Parse(req.GetRecord().GetUserId())
-	if err != nil {
-		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
-	}
-
 	// Try and create record
 	created, err := s.service.Create(ctx, req.GetRecord())
 	if err != nil {
@@ -146,18 +141,8 @@ func (s *SowGRPCServer) UpdateRecord(ctx context.Context, req *sow.UpdateRecordR
 		return nil, errors.Join(status.Error(codes.InvalidArgument, "record cannot be nil"), errs.ErrBadRequest)
 	}
 
-	userId, err := uuid.Parse(req.GetRecord().GetUserId())
-	if err != nil {
-		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
-	}
-
-	id, err := uuid.Parse(req.GetRecord().GetId())
-	if err != nil {
-		return nil, errors.Join(status.Errorf(codes.InvalidArgument, "id of %q is not a valid uuid", userId), errs.ErrBadRequest)
-	}
-
 	// Attempt to update record
-	err = s.service.Update(ctx, id, req.GetRecord())
+	err := s.service.Update(ctx, req.GetRecord())
 	if err != nil {
 		if errors.Is(err, errs.ErrInvalidRequest) {
 			s.log.ErrorContext(ctx, "invalid request occured", slog.Any("err", err))

@@ -11,8 +11,8 @@ import (
 )
 
 type FoodRecordEntry struct {
-	Id          int
-	Uuid        uuid.UUID
+	DbId        int
+	Id          uuid.UUID
 	UserId      uuid.UUID
 	Name        string
 	Description string
@@ -49,7 +49,7 @@ func (s *MemoryFoodStore) CreateFood(record FoodRecordEntry) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	s.entries[record.Uuid.String()] = record
+	s.entries[record.Id.String()] = record
 
 	if s.log != nil {
 		// Safety debug logging :)
@@ -84,7 +84,7 @@ func (s *MemoryFoodStore) GetManyFood(filter FoodRecordEntry) ([]FoodRecordEntry
 		if strings.Contains(val.Name, filter.Name) {
 			entries = append(entries, val)
 		}
-		if val.UserId == filter.Uuid {
+		if val.UserId == filter.Id {
 			entries = append(entries, val)
 		}
 		if val.KJ == filter.KJ {
@@ -106,7 +106,7 @@ func (s *MemoryFoodStore) UpdateFood(record FoodRecordEntry) error {
 	s.mux.Lock()
 	defer s.mux.Unlock()
 
-	s.entries[record.Uuid.String()] = record
+	s.entries[record.Id.String()] = record
 
 	if s.log != nil {
 		// Safety debug logging :)

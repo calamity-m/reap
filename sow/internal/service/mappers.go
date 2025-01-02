@@ -12,6 +12,7 @@ import (
 
 func MapEntryToRecord(entry persistence.FoodRecordEntry) *sow.Record {
 	record := &sow.Record{
+		Id:          entry.UserId.String(),
 		UserId:      entry.UserId.String(),
 		Name:        entry.Name,
 		Description: entry.Description,
@@ -27,12 +28,18 @@ func MapEntryToRecord(entry persistence.FoodRecordEntry) *sow.Record {
 }
 
 func MapRecordToEntry(record *sow.Record) (persistence.FoodRecordEntry, error) {
+	id, err := uuid.Parse(record.GetId())
+	if err != nil {
+		return persistence.FoodRecordEntry{}, errors.Join(fmt.Errorf("id is not valid"), errs.ErrInvalidRequest)
+	}
+
 	userId, err := uuid.Parse(record.GetUserId())
 	if err != nil {
 		return persistence.FoodRecordEntry{}, errors.Join(fmt.Errorf("user id is not valid"), errs.ErrInvalidRequest)
 	}
 
 	entry := persistence.FoodRecordEntry{
+		Id:          id,
 		UserId:      userId,
 		Name:        record.Name,
 		Description: record.Description,
