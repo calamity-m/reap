@@ -37,32 +37,15 @@ func MapRecordToEntry(record *sow.Record) (persistence.FoodRecordEntry, error) {
 		return persistence.FoodRecordEntry{}, fmt.Errorf("userid is not a valid uuid: %w", errs.ErrInvalidRequest)
 	}
 
-	entry := persistence.FoodRecordEntry{
-		Id:          id,
-		UserId:      userId,
-		Name:        record.Name,
-		Description: record.Description,
-		KJ:          calsToKJ(record.Calories),
-		ML:          flOzToML(record.FlOz),
-		Grams:       ozToGrams(record.Oz),
-		Created:     record.Time.AsTime(),
-	}
+	entry := MapRecordToEntryWithoutUuids(record)
 
-	// Yucky imperial system
-	if record.Kj != 0 {
-		entry.KJ = record.Kj
-	}
-	if record.Grams != 0 {
-		entry.Grams = record.Grams
-	}
-	if record.Ml != 0 {
-		entry.ML = record.Ml
-	}
+	entry.Id = id
+	entry.UserId = userId
 
 	return entry, nil
 }
 
-func MapRecordToEntryWithoutUuids(record *sow.Record) (persistence.FoodRecordEntry, error) {
+func MapRecordToEntryWithoutUuids(record *sow.Record) persistence.FoodRecordEntry {
 	entry := persistence.FoodRecordEntry{
 		Name:        record.Name,
 		Description: record.Description,
@@ -83,7 +66,7 @@ func MapRecordToEntryWithoutUuids(record *sow.Record) (persistence.FoodRecordEnt
 		entry.ML = record.Ml
 	}
 
-	return entry, nil
+	return entry
 }
 
 func calsToKJ(cals float32) float32 {
