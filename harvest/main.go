@@ -1,7 +1,15 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"github.com/calamity-m/reap/harvest/cmd"
+)
 
 func main() {
-	fmt.Println(";)")
+	if err := cmd.Execute(); err != nil {
+		fmt.Println("failed to run harvest")
+		os.Exit(1)
+	}
 }
