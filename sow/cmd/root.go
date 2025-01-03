@@ -30,6 +30,7 @@ var rootCmd = &cobra.Command{
 			Structed:        cfg.LogStructured,
 			RecordRequestId: cfg.LogRequestId,
 			Level:           cfg.LogLevel,
+			AddSource:       cfg.LogAddSource,
 		}))
 
 		// Create sow server
